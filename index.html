@@ -604,6 +604,26 @@
         overviewBtn.addEventListener('click', showOverview);
         packagingOverviewBtn.addEventListener('click', showPackagingOverview);
 
+        // 把用空格分隔的多段文字拆成多行（包装形式、风味特点等）
+        function breakBySpace(s) {
+            const t = (s || '—').trim();
+            return t ? t.split(/\s+/).filter(Boolean).join('\n') : t;
+        }
+
+        // 保质期拆行：「熟啤酒：瓶装X天、听装X天、… 生啤酒：瓶装X天、…」→ 每种包装单独一行
+        function shelfToLines(s) {
+            const v = (s || '—').replace(/\s+/g, ' ').trim();
+            if (!v || v === '—') return v;
+            return v.split(' ').filter(Boolean).map(seg => {
+                const idx = seg.indexOf('：');
+                if (idx === -1) return seg;
+                const prefix = seg.slice(0, idx + 1);
+                const items = seg.slice(idx + 1).split(/[、,，]/).map(x => x.trim()).filter(Boolean);
+                if (!items.length) return seg;
+                return items.map((it, i) => (i === 0 ? prefix + it : it)).join('\n');
+            }).join('\n');
+        }
+
         function renderOverviewTable() {
             const container = document.getElementById('overview-table-container');
             if (!container) return;
@@ -649,8 +669,8 @@
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40"><button type="button" data-overview-product-id="' + p.id + '" class="font-bold text-primary hover:underline text-left leading-snug">' + p.name + '</button></td>';
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words">' + p.claim + '</td>';
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words">' + p.process + '</td>';
-                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words">' + p.flavor + '</td>';
-                        cells += '<td rowspan="' + rowCount + '" class="js-packaging-cell px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words cursor-help">' + p.packaging + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed whitespace-pre-line break-words">' + breakBySpace(p.flavor) + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="js-packaging-cell px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed whitespace-pre-line break-words cursor-help">' + breakBySpace(p.packaging) + '</td>';
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant leading-snug break-words">' + (p.factory || '—') + '</td>';
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant leading-snug break-all">' + (p.sc || '—') + '</td>';
                     }
@@ -658,10 +678,10 @@
                     cells += '<td class="px-2.5 py-3 whitespace-nowrap align-middle text-on-surface font-semibold">' + (s['酒精度'] || '—') + '</td>';
                     if (shelfSame) {
                         if (i === 0) {
-                            cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 text-on-surface leading-relaxed break-words align-middle">' + shelfValues[0] + '</td>';
+                            cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 text-on-surface leading-relaxed whitespace-pre-line break-words align-middle">' + shelfToLines(shelfValues[0]) + '</td>';
                         }
                     } else {
-                        cells += '<td class="px-2.5 py-3 text-on-surface leading-relaxed break-words align-middle">' + shelfValues[i] + '</td>';
+                        cells += '<td class="px-2.5 py-3 text-on-surface leading-relaxed whitespace-pre-line break-words align-middle">' + shelfToLines(shelfValues[i]) + '</td>';
                     }
                     tbody += '<tr class="border-b border-outline-variant/40 last:border-0 hover:bg-surface-container-low/50 transition-colors align-middle">' + cells + '</tr>';
                 });
