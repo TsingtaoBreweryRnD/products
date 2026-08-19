@@ -527,9 +527,9 @@
                 { label: '包装形式', w: '13%' },
                 { label: '生产工厂', w: '6%' },
                 { label: 'SC证', w: '7%' },
-                { label: '原麦汁浓度', w: '7%' },
-                { label: '酒精度', w: '6%' },
-                { label: '保质期', w: '13%' }
+                { label: '原麦汁浓度', w: '6%' },
+                { label: '酒精度', w: '9%' },
+                { label: '保质期', w: '11%' }
             ];
             const colgroup = '<colgroup>' + COLS.map(c => '<col style="width:' + c.w + '">').join('') + '</colgroup>';
             const thead = COLS.map(l =>
@@ -556,8 +556,8 @@
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant leading-snug break-words">' + (p.factory || '—') + '</td>';
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant leading-snug break-all">' + (p.sc || '—') + '</td>';
                     }
-                    cells += '<td class="px-2.5 py-3 whitespace-nowrap align-middle text-on-surface font-semibold">' + (s['原麦汁浓度'] || '—') + '</td>';
-                    cells += '<td class="px-2.5 py-3 whitespace-nowrap align-middle text-on-surface font-semibold">' + (s['酒精度'] || '—') + '</td>';
+                    cells += '<td class="px-2.5 py-3 whitespace-nowrap align-middle border-r border-outline-variant/40 text-on-surface font-semibold">' + (s['原麦汁浓度'] || '—') + '</td>';
+                    cells += '<td class="px-2.5 py-3 whitespace-nowrap align-middle border-r border-outline-variant/40 text-on-surface font-semibold">' + (s['酒精度'] || '—') + '</td>';
                     if (shelfSame) {
                         if (i === 0) {
                             cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 text-on-surface leading-relaxed whitespace-pre-line break-words align-middle">' + shelfToLines(shelfValues[0]) + '</td>';
