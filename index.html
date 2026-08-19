@@ -81,9 +81,6 @@
         /* Hide scrollbar for cleaner UI */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        /* 品类分组展开动画 */
-        @keyframes rail-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-        .rail-in { animation: rail-in 0.18s ease; }
     </style>
 </head>
 <body class="bg-surface text-on-surface flex flex-col md:flex-row min-h-screen overflow-x-hidden">
@@ -115,11 +112,6 @@
             </button>
         </div>
 
-        <!-- Dynamic Product List replaces static nav -->
-        <div id="product-rail" class="flex-1 overflow-y-auto flex flex-col gap-2 px-4 pb-4 no-scrollbar">
-            <!-- Dynamically populated by JS -->
-        </div>
-        
     </aside>
 
     <!-- Overlay for mobile sidebar -->
@@ -246,6 +238,10 @@
                             <h2 class="text-2xl md:text-3xl font-bold text-on-surface">酒液</h2>
                             <p class="text-sm text-on-surface-variant mt-1" id="overview-subtitle">横向对比全部产品的品类、品种与指标。</p>
                         </div>
+                        <div id="overview-filter" class="flex flex-col gap-3">
+                            <div id="overview-category-chips" class="flex flex-wrap items-center gap-2"></div>
+                            <div id="overview-variety-chips" class="flex flex-wrap items-center gap-2 hidden"></div>
+                        </div>
                         <div id="overview-table-container" class="bg-white border border-outline-variant/60 rounded-xl shadow-sm overflow-hidden"></div>
                     </div>
 
@@ -279,14 +275,9 @@
     <script>
         // --- Product data loaded from JSON ---
         let productsData = [];
-        let activeProductId = null;
         let packagingData = [];
-        let expandedCategories = new Set();
-        let railGroups = [];
-        let expandedVarieties = new Set();
-
-        // --- DOM Elements ---
-        const productRail = document.getElementById('product-rail');
+        let overviewCategory = null;
+        let overviewVariety = null;
 
         // --- 将 products_all.json 的嵌套结构展开为扁平产品列表 ---
         function flattenProducts(raw) {
@@ -317,180 +308,13 @@
             return list;
         }
 
-        function productItemHtml(prod) {
-            const isActive = prod.id === activeProductId;
-            const itemClass = isActive ? 'bg-primary-container/10 border-primary text-primary font-bold' : 'border-transparent text-on-surface font-medium hover:bg-surface-container-low';
-            return `
-                <div data-product-id="${prod.id}" class="flex items-center gap-2 px-3 py-2 rounded-lg border-l-2 cursor-pointer transition-all ${itemClass}">
-                    <span class="text-sm truncate flex-1">${prod.name}</span>
-                </div>
-            `;
-        }
-
-        function renderRail() {
-            // 按「品类 → 品种」两级分组，保持首次出现的顺序
-            const groups = [];
-            const catIndex = {};
-            const varIndex = {};
-            productsData.forEach(prod => {
-                let g;
-                if (prod.category in catIndex) {
-                    g = groups[catIndex[prod.category]];
-                } else {
-                    catIndex[prod.category] = groups.length;
-                    g = { category: prod.category, varieties: [], count: 0 };
-                    groups.push(g);
-                }
-                g.count += 1;
-                const vkey = prod.category + '||' + prod.variety;
-                let vg;
-                if (vkey in varIndex) {
-                    vg = g.varieties[varIndex[vkey]];
-                } else {
-                    varIndex[vkey] = g.varieties.length;
-                    vg = { variety: prod.variety, items: [] };
-                    g.varieties.push(vg);
-                }
-                vg.items.push(prod);
-            });
-            railGroups = groups;
-
-            // 自动展开当前选中产品所在的品类与品种
-            if (activeProductId) {
-                const active = productsData.find(p => p.id === activeProductId);
-                if (active) {
-                    expandedCategories.add(active.category);
-                    expandedVarieties.add(active.category + '||' + active.variety);
-                }
-            }
-
-            const scrollTop = productRail.scrollTop;
-            let html = '';
-            groups.forEach((g, gi) => {
-                const expanded = expandedCategories.has(g.category);
-                const chevClass = expanded ? 'rotate-90 text-primary' : 'text-outline-variant';
-                const labelClass = expanded ? 'text-primary' : 'text-on-surface-variant';
-                const countClass = expanded ? 'bg-primary/10 text-primary' : 'bg-surface-container text-on-surface-variant';
-
-                const body = g.varieties.map((vg, si) => {
-                    const vkey = g.category + '||' + vg.variety;
-                    const vExpanded = expandedVarieties.has(vkey);
-                    const vChevClass = vExpanded ? 'rotate-90 text-primary' : 'text-outline-variant';
-                    const vLabelClass = vExpanded ? 'text-primary' : 'text-on-surface-variant';
-                    const vCountClass = vExpanded ? 'bg-primary/10 text-primary' : 'bg-surface-container text-on-surface-variant';
-                    return `
-                        <div class="flex flex-col">
-                            <button type="button" data-var-index="${gi}-${si}" class="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-left transition-colors hover:bg-surface-container-low">
-                                <span class="material-symbols-outlined text-base transition-transform chev ${vChevClass}">chevron_right</span>
-                                <span class="text-xs font-semibold flex-1 truncate cat-label ${vLabelClass}">${vg.variety}</span>
-                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full cat-count ${vCountClass}">${vg.items.length}</span>
-                            </button>
-                            <div data-var-items="${gi}-${si}" class="flex flex-col gap-1 pl-3 ml-2 border-l border-outline-variant/40 mt-0.5 mb-1 ${vExpanded ? '' : 'hidden'}">
-                                ${vg.items.map(productItemHtml).join('')}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                html += `
-                    <div class="flex flex-col">
-                        <button type="button" data-cat-index="${gi}" class="w-full flex items-center gap-1.5 px-2 py-2 rounded-lg text-left transition-colors hover:bg-surface-container-low">
-                            <span class="material-symbols-outlined text-base transition-transform chev ${chevClass}">chevron_right</span>
-                            <span class="text-xs font-bold uppercase tracking-wide flex-1 truncate cat-label ${labelClass}">${g.category}</span>
-                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full cat-count ${countClass}">${g.count}</span>
-                        </button>
-                        <div data-cat-items="${gi}" class="flex flex-col gap-1 pl-3 ml-2 border-l border-outline-variant/40 mt-0.5 mb-1.5 ${expanded ? '' : 'hidden'}">
-                            ${body}
-                        </div>
-                    </div>
-                `;
-            });
-            productRail.innerHTML = html;
-            productRail.scrollTop = scrollTop;
-        }
-
-        function setHeaderState(header, expanded) {
-            const chev = header.querySelector('.chev');
-            const label = header.querySelector('.cat-label');
-            const count = header.querySelector('.cat-count');
-            if (expanded) {
-                chev.classList.add('rotate-90', 'text-primary');
-                chev.classList.remove('text-outline-variant');
-                if (label) { label.classList.add('text-primary'); label.classList.remove('text-on-surface-variant'); }
-                if (count) { count.classList.add('bg-primary/10', 'text-primary'); count.classList.remove('bg-surface-container', 'text-on-surface-variant'); }
-            } else {
-                chev.classList.remove('rotate-90', 'text-primary');
-                chev.classList.add('text-outline-variant');
-                if (label) { label.classList.remove('text-primary'); label.classList.add('text-on-surface-variant'); }
-                if (count) { count.classList.remove('bg-primary/10', 'text-primary'); count.classList.add('bg-surface-container', 'text-on-surface-variant'); }
-            }
-        }
-
-        function setContainerState(container, expanded) {
-            if (expanded) {
-                container.classList.remove('hidden');
-                container.classList.remove('rail-in');
-                void container.offsetWidth;
-                container.classList.add('rail-in');
-            } else {
-                container.classList.add('hidden');
-            }
-        }
-
-        function toggleCategory(gi) {
-            const g = railGroups[gi];
-            if (!g) return;
-            const items = productRail.querySelector('[data-cat-items="' + gi + '"]');
-            const header = productRail.querySelector('[data-cat-index="' + gi + '"]');
-            if (!items || !header) return;
-            const nowExpanded = !expandedCategories.has(g.category);
-            if (nowExpanded) expandedCategories.add(g.category); else expandedCategories.delete(g.category);
-            setHeaderState(header, nowExpanded);
-            setContainerState(items, nowExpanded);
-        }
-
-        function toggleVariety(gi, si) {
-            const g = railGroups[gi];
-            if (!g || !g.varieties || !g.varieties[si]) return;
-            const vg = g.varieties[si];
-            const vkey = g.category + '||' + vg.variety;
-            const items = productRail.querySelector('[data-var-items="' + gi + '-' + si + '"]');
-            const header = productRail.querySelector('[data-var-index="' + gi + '-' + si + '"]');
-            if (!items || !header) return;
-            const nowExpanded = !expandedVarieties.has(vkey);
-            if (nowExpanded) expandedVarieties.add(vkey); else expandedVarieties.delete(vkey);
-            setHeaderState(header, nowExpanded);
-            setContainerState(items, nowExpanded);
-        }
-
-        // --- Rail 交互：展开/收起品类与品种 + 选择产品 ---
-        productRail.addEventListener('click', (e) => {
-            const catHeader = e.target.closest('[data-cat-index]');
-            if (catHeader) {
-                toggleCategory(parseInt(catHeader.getAttribute('data-cat-index'), 10));
-                return;
-            }
-            const varHeader = e.target.closest('[data-var-index]');
-            if (varHeader) {
-                const parts = varHeader.getAttribute('data-var-index').split('-');
-                toggleVariety(parseInt(parts[0], 10), parseInt(parts[1], 10));
-                return;
-            }
-            const item = e.target.closest('[data-product-id]');
-            if (item) selectProduct(item.getAttribute('data-product-id'));
-        });
-
         // --- Update Main View ---
         function selectProduct(id) {
-            activeProductId = id;
             const prod = productsData.find(p => p.id === id);
             if(!prod) return;
 
             // 切回产品详情视图（若当前在总览视图）
             showProductView();
-
-            // Re-render rail to update active styling
-            renderRail();
 
             // Update breadcrumb & title
             document.getElementById('breadcrumb-category').textContent = prod.category;
@@ -624,15 +448,73 @@
             }).join('\n');
         }
 
+        // --- 酒液总览：品类/品种筛选 ---
+        function filteredProducts() {
+            return productsData.filter(p => {
+                if (overviewCategory && p.category !== overviewCategory) return false;
+                if (overviewVariety && p.variety !== overviewVariety) return false;
+                return true;
+            });
+        }
+
+        function filterChipClass(active) {
+            return active
+                ? 'px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors bg-primary text-white border-primary'
+                : 'px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-low';
+        }
+
+        function renderFilterChips() {
+            const catEl = document.getElementById('overview-category-chips');
+            const varEl = document.getElementById('overview-variety-chips');
+            const cats = [...new Set(productsData.map(p => p.category))];
+            let catHtml = '<button type="button" data-filter-cat="all" class="' + filterChipClass(!overviewCategory) + '">全部</button>';
+            cats.forEach(c => {
+                catHtml += '<button type="button" data-filter-cat="' + c + '" class="' + filterChipClass(overviewCategory === c) + '">' + c + '</button>';
+            });
+            catEl.innerHTML = catHtml;
+            if (overviewCategory) {
+                const varieties = [...new Set(productsData.filter(p => p.category === overviewCategory).map(p => p.variety))];
+                let varHtml = '<button type="button" data-filter-var="all" class="' + filterChipClass(!overviewVariety) + '">全部</button>';
+                varieties.forEach(v => {
+                    varHtml += '<button type="button" data-filter-var="' + v + '" class="' + filterChipClass(overviewVariety === v) + '">' + v + '</button>';
+                });
+                varEl.innerHTML = varHtml;
+                varEl.classList.remove('hidden');
+            } else {
+                varEl.innerHTML = '';
+                varEl.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('overview-category-chips').addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-filter-cat]');
+            if (!btn) return;
+            const cat = btn.getAttribute('data-filter-cat');
+            overviewCategory = (cat === 'all') ? null : cat;
+            overviewVariety = null;
+            renderFilterChips();
+            renderOverviewTable();
+        });
+
+        document.getElementById('overview-variety-chips').addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-filter-var]');
+            if (!btn) return;
+            const v = btn.getAttribute('data-filter-var');
+            overviewVariety = (v === 'all') ? null : v;
+            renderFilterChips();
+            renderOverviewTable();
+        });
+
         function renderOverviewTable() {
             const container = document.getElementById('overview-table-container');
             if (!container) return;
             const subtitle = document.getElementById('overview-subtitle');
-            const totalSkus = productsData.reduce((n, p) => n + ((p.skus && p.skus.length) ? p.skus.length : 0), 0);
-            if (subtitle) subtitle.textContent = '共 ' + productsData.length + ' 个产品 · ' + totalSkus + ' 个规格，汇总全部产品的品类、品种、工艺、风味、包装与指标。';
+            const list = filteredProducts();
+            const totalSkus = list.reduce((n, p) => n + ((p.skus && p.skus.length) ? p.skus.length : 0), 0);
+            if (subtitle) subtitle.textContent = '共 ' + list.length + ' 个产品 · ' + totalSkus + ' 个规格';
             if (overviewCount) overviewCount.textContent = productsData.length;
-            if (!productsData.length) {
-                container.innerHTML = '<p class="p-6 text-sm text-on-surface-variant">暂无产品数据</p>';
+            if (!list.length) {
+                container.innerHTML = '<p class="p-6 text-sm text-on-surface-variant">该分类下暂无产品</p>';
                 return;
             }
             const COLS = [
@@ -655,7 +537,7 @@
             ).join('');
 
             let tbody = '';
-            productsData.forEach(p => {
+            list.forEach(p => {
                 const skus = (p.skus && p.skus.length) ? p.skus : [{}];
                 const color = beerCategoryColor(p.category);
                 const rowCount = skus.length;
@@ -976,14 +858,9 @@
         window.addEventListener('load', async () => {
             await loadProducts();
             loadPackaging();
-            if (productsData.length > 0) {
-                activeProductId = productsData[0].id;
-            }
-            renderRail();
+            renderFilterChips();
             renderOverviewTable();
-            if (activeProductId) {
-                selectProduct(activeProductId);
-            }
+            showOverview();
         });
     </script>
 </body>
