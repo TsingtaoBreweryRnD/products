@@ -1,0 +1,459 @@
+
+[
+  {
+    "id": "p1",
+    "name": "全麦拉格",
+    "code": "#001",
+    "liquidType": {
+      "category": "拉格",
+      "variety": "全麦拉格",
+      "claim": "全麦拉格、全麦纯生"
+    },
+    "specs": {
+      "wort": "8°P-13.5°P",
+      "abv": "3.1%vol-5.0%vol",
+      "shelfLife": "熟啤酒：瓶装365天、听装365天、马口铁桶装120天 生啤酒：瓶装180天、听装365天",
+      "features": "麦香明显，口感醇厚",
+      "process": "100%麦芽"
+    }
+  },
+  {
+    "id": "p2",
+    "name": "全麦酒花拉格",
+    "code": "#002",
+    "liquidType": {
+      "category": "拉格",
+      "variety": "全麦酒花拉格",
+      "claim": "全麦拉格、全麦纯生"
+    },
+    "specs": {
+      "wort": "8°P-13°P",
+      "abv": "3.1%vol-5.0%vol",
+      "shelfLife": "熟啤酒：瓶装365天、听装365天、马口铁桶装120天 生啤酒：瓶装180天、听装365天",
+      "features": "麦香明显、口感醇厚、优雅的酒花香气",
+      "process": "100%麦芽，酒花加强"
+    }
+  },
+  {
+    "id": "p3",
+    "name": "普通拉格",
+    "code": "#003",
+    "liquidType": {
+      "category": "拉格",
+      "variety": "普通拉格",
+      "claim": "拉格"
+    },
+    "specs": {
+      "wort": "8°P-13°P",
+      "abv": "3.1%vol-5.0%vol",
+      "shelfLife": "熟啤酒：瓶装365天、听装365天、马口铁桶装120天 生啤酒：瓶装180天、听装365天",
+      "features": "麦香优雅，酒体柔和爽口"
+    }
+  },
+  {
+    "id": "p4",
+    "name": "全麦干啤",
+    "code": "#004",
+    "liquidType": {
+      "category": "拉格",
+      "variety": "全麦干啤",
+      "claim": "日式拉格"
+    },
+    "specs": {
+      "wort": "11°P-12°P",
+      "abv": "4.7%vol-5.0%vol",
+      "shelfLife": "熟啤酒：瓶装365天、听装365天、马口铁桶装120天 生啤酒：瓶装180天、听装365天",
+      "features": "麦香浓郁、口感干爽、苦感柔和",
+      "process": "发酵度≥72%"
+    }
+  },
+  {
+    "id": "p5",
+    "name": "藜麦啤酒",
+    "code": "#005",
+    "liquidType": {
+      "category": "拉格",
+      "variety": "藜麦啤酒",
+      "claim": "无对应产品"
+    },
+    "specs": {
+      "wort": "11°P",
+      "abv": "4.3%vol",
+      "shelfLife": "熟啤酒：365天",
+      "features": "藜麦独有的皂苷香气，口感醇厚",
+      "process": "使用藜麦"
+    }
+  },
+  {
+    "id": "p6",
+    "name": "德式小麦",
+    "code": "#006",
+    "liquidType": {
+      "category": "艾尔",
+      "variety": "德式小麦",
+      "claim": "全麦白啤、德式白啤、小麦啤酒等"
+    },
+    "specs": {
+      "wort": "9°P-14°P",
+      "abv": "3.6%vol-5.5%vol",
+      "shelfLife": "熟啤酒：365天",
+      "features": "香蕉酯香、丁香浓郁、口感醇厚",
+      "process": "不过滤、不稀释"
+    }
+  },
+  {
+    "id": "p7",
+    "name": "比利时白啤",
+    "code": "#007",
+    "liquidType": {
+      "category": "艾尔",
+      "variety": "比利时白啤",
+      "claim": "比利时小麦"
+    },
+    "specs": {
+      "wort": "11°P-13.5°P",
+      "abv": "4.0%vol-5.0%vol",
+      "shelfLife": "熟啤酒：365天",
+      "features": "使用芫荽子、橘皮，酯香明显，口感醇厚",
+      "process": "不过滤、不稀释"
+    }
+  },
+  {
+    "id": "p8",
+    "name": "IPA",
+    "code": "#008",
+    "liquidType": {
+      "category": "艾尔",
+      "variety": "IPA",
+      "claim": "印度淡色艾尔"
+    },
+    "specs": {
+      "wort": "14°P",
+      "abv": "5.2%vol",
+      "shelfLife": "熟啤酒：365天",
+      "features": "柑橘等热带水果香气明显，苦爽回甘",
+      "process": "不过滤、不稀释"
+    }
+  },
+  {
+    "id": "p9",
+    "name": "美式IPA",
+    "code": "#009",
+    "liquidType": {
+      "category": "艾尔",
+      "variety": "美式IPA",
+      "claim": "社交IPA"
+    },
+    "specs": {
+      "wort": "10°P",
+      "abv": "4.0%vol",
+      "shelfLife": "熟啤酒：365天",
+      "features": "柑橘等热带水果香气突出，口感淡爽",
+      "process": "不过滤、不稀释"
+    }
+  },
+  {
+    "id": "p10",
+    "name": "酒花小麦",
+    "code": "#010",
+    "liquidType": {
+      "category": "艾尔",
+      "variety": "酒花小麦",
+      "claim": "酒花小麦"
+    },
+    "specs": {
+      "wort": "12°P",
+      "abv": "4.6%vol",
+      "shelfLife": "熟啤酒：365天",
+      "features": "热带水果的酒花香气突出，丁香明显，口感醇厚",
+      "process": "不过滤、不稀释"
+    }
+  },
+  {
+    "id": "p11",
+    "name": "草莓西柚",
+    "code": "#011",
+    "liquidType": {
+      "category": "特种",
+      "variety": "果蔬汁",
+      "claim": "果蔬汁啤酒"
+    },
+    "specs": {
+      "wort": "14.5°P",
+      "abv": "4.0%vol",
+      "shelfLife": "熟啤酒：瓶装90天-270天（根据果汁含量确定）",
+      "features": "浓郁草莓、西柚香气，口感醇厚，果汁感明显"
+    }
+  },
+  {
+    "id": "p12",
+    "name": "玫瑰红白啤",
+    "code": "#012",
+    "liquidType": {
+      "category": "特种",
+      "variety": "果蔬汁",
+      "claim": "果蔬汁啤酒"
+    },
+    "specs": {
+      "wort": "12°P",
+      "abv": "3.5%vol",
+      "shelfLife": "熟啤酒：瓶装90天-270天（根据果汁含量确定）",
+      "features": "突出的莓果香气，口感醇厚、酸甜可口"
+    }
+  },
+  {
+    "id": "p13",
+    "name": "西柚酸啤",
+    "code": "#013",
+    "liquidType": {
+      "category": "特种",
+      "variety": "果蔬汁",
+      "claim": "果蔬汁啤酒"
+    },
+    "specs": {
+      "wort": "12°P",
+      "abv": "4.0%vol",
+      "shelfLife": "熟啤酒：瓶装90天-270天（根据果汁含量确定）",
+      "features": "西柚香气，酸爽可口，酸感柔和"
+    }
+  },
+  {
+    "id": "p14",
+    "name": "樱桃小麦",
+    "code": "#014",
+    "liquidType": {
+      "category": "特种",
+      "variety": "果蔬汁",
+      "claim": "果蔬汁啤酒"
+    },
+    "specs": {
+      "wort": "13°P",
+      "abv": "4.0%vol",
+      "shelfLife": "熟啤酒：瓶装90天-270天（根据果汁含量确定）",
+      "features": "樱桃香气、口感醇厚、酸甜可口"
+    }
+  },
+  {
+    "id": "p15",
+    "name": "西柚白茶",
+    "code": "#015",
+    "liquidType": {
+      "category": "特种",
+      "variety": "果蔬汁",
+      "claim": "果蔬汁啤酒"
+    },
+    "specs": {
+      "wort": "14°P",
+      "abv": "4.0%vol",
+      "shelfLife": "熟啤酒：瓶装90天-270天（根据果汁含量确定）",
+      "features": "西柚、白茶香气、口感醇厚"
+    }
+  },
+  {
+    "id": "p16",
+    "name": "乳酸菌味啤酒",
+    "code": "#016",
+    "liquidType": {
+      "category": "特种",
+      "variety": "果蔬汁",
+      "claim": "果蔬汁啤酒"
+    },
+    "specs": {
+      "wort": "14°P",
+      "abv": "3.5%vol",
+      "shelfLife": "熟啤酒：瓶装90天-270天（根据果汁含量确定）",
+      "features": "乳酸菌饮料香气、酸甜可口"
+    }
+  },
+  {
+    "id": "p17",
+    "name": "羽衣甘蓝猕猴桃",
+    "code": "#017",
+    "liquidType": {
+      "category": "特种",
+      "variety": "果蔬汁",
+      "claim": "果蔬汁啤酒"
+    },
+    "specs": {
+      "shelfLife": "熟啤酒：瓶装90天-270天（根据果汁含量确定）",
+      "features": "猕猴桃香气、植物香气，口感醇厚"
+    }
+  },
+  {
+    "id": "p18",
+    "name": "番茄啤酒",
+    "code": "#018",
+    "liquidType": {
+      "category": "特种",
+      "variety": "果蔬汁",
+      "claim": "果蔬汁啤酒"
+    },
+    "specs": {
+      "shelfLife": "熟啤酒：瓶装90天-270天（根据果汁含量确定）",
+      "features": "番茄香气、口感醇厚"
+    }
+  },
+  {
+    "id": "p19",
+    "name": "白桃乌龙",
+    "code": "#019",
+    "liquidType": {
+      "category": "特种",
+      "variety": "果蔬味",
+      "claim": "果蔬味啤酒、茶啤酒"
+    },
+    "specs": {
+      "wort": "10.8°P",
+      "abv": "3.0%vol",
+      "shelfLife": "熟啤酒：瓶装180天、听装365天、马口铁桶装120天",
+      "features": "水蜜桃香气、乌龙茶香交融，爽口"
+    }
+  },
+  {
+    "id": "p20",
+    "name": "茉莉青提",
+    "code": "#020",
+    "liquidType": {
+      "category": "特种",
+      "variety": "果蔬味",
+      "claim": "果蔬味啤酒、茶啤酒"
+    },
+    "specs": {
+      "wort": "10.8°P",
+      "abv": "3.0%vol",
+      "shelfLife": "熟啤酒：瓶装180天、听装365天、马口铁桶装120天",
+      "features": "茉莉香气、葡萄香气融合，爽口"
+    }
+  },
+  {
+    "id": "p21",
+    "name": "茉莉花味拉格",
+    "code": "#021",
+    "liquidType": {
+      "category": "特种",
+      "variety": "增味",
+      "claim": "增味啤酒、茶啤酒"
+    },
+    "specs": {
+      "wort": "8°P-10°P",
+      "abv": "3.1%vol-4.0%vol",
+      "shelfLife": "熟啤酒：瓶装180天、听装365天、马口铁桶装120天",
+      "features": "茉莉花香气突出，淡爽易饮"
+    }
+  },
+  {
+    "id": "p22",
+    "name": "柠檬红茶",
+    "code": "#022",
+    "liquidType": {
+      "category": "特种",
+      "variety": "增味",
+      "claim": "增味啤酒、茶啤酒"
+    },
+    "specs": {
+      "wort": "10.8°P",
+      "abv": "3.0%vol",
+      "shelfLife": "熟啤酒：瓶装180天、听装365天、马口铁桶装120天",
+      "features": "柠檬香、红茶香融洽，爽口"
+    }
+  },
+  {
+    "id": "p23",
+    "name": "茉莉花白啤",
+    "code": "#023",
+    "liquidType": {
+      "category": "特种",
+      "variety": "增味",
+      "claim": "增味啤酒、茶啤酒"
+    },
+    "specs": {
+      "wort": "9°P",
+      "abv": "3.6%vol",
+      "shelfLife": "熟啤酒：瓶装180天、听装365天、马口铁桶装120天",
+      "features": "茉莉花香气明显，酯香、花香交融，口感醇厚"
+    }
+  },
+  {
+    "id": "p24",
+    "name": "樱花白啤",
+    "code": "#024",
+    "liquidType": {
+      "category": "特种",
+      "variety": "增味",
+      "claim": "增味啤酒、茶啤酒"
+    },
+    "specs": {
+      "wort": "9°P",
+      "abv": "3.6%vol",
+      "shelfLife": "熟啤酒：瓶装180天、听装365天、马口铁桶装120天",
+      "features": "樱花香气明显，酯香、花香交融，口感醇厚"
+    }
+  },
+  {
+    "id": "p25",
+    "name": "桂花白啤",
+    "code": "#025",
+    "liquidType": {
+      "category": "特种",
+      "variety": "增味",
+      "claim": "增味啤酒、茶啤酒"
+    },
+    "specs": {
+      "wort": "9°P",
+      "abv": "3.6%vol",
+      "shelfLife": "熟啤酒：瓶装180天、听装365天、马口铁桶装120天",
+      "features": "桂花香气明显，酯香、花香交融，口感醇厚"
+    }
+  },
+  {
+    "id": "p26",
+    "name": "无醇白啤",
+    "code": "#026",
+    "liquidType": {
+      "category": "特种",
+      "variety": "无醇",
+      "claim": "无醇啤酒、零醇啤酒"
+    },
+    "specs": {
+      "wort": "4.6°P",
+      "abv": "＜0.05%vol",
+      "shelfLife": "熟啤酒：瓶装240天、听装365天",
+      "features": "酒精含量＜0.05%，白啤风格",
+      "process": "脱醇工艺"
+    }
+  },
+  {
+    "id": "p27",
+    "name": "无醇皮尔森",
+    "code": "#027",
+    "liquidType": {
+      "category": "特种",
+      "variety": "无醇",
+      "claim": "无醇啤酒、零醇啤酒"
+    },
+    "specs": {
+      "wort": "4.6°P",
+      "abv": "＜0.05%vol",
+      "shelfLife": "熟啤酒：瓶装240天、听装365天",
+      "features": "酒精含量＜0.05%，皮尔森风格",
+      "process": "脱醇工艺"
+    }
+  },
+  {
+    "id": "p28",
+    "name": "无醇柠檬味",
+    "code": "#028",
+    "liquidType": {
+      "category": "特种",
+      "variety": "无醇",
+      "claim": "无醇啤酒、零醇啤酒"
+    },
+    "specs": {
+      "wort": "4.7°P",
+      "abv": "≤0.15%vol",
+      "shelfLife": "熟啤酒：瓶装240天、听装365天",
+      "features": "柠檬香气明显，酒精含量≤0.15%vol",
+      "process": "脱醇工艺"
+    }
+  }
+]
