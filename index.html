@@ -569,13 +569,13 @@
             if (!container) return;
             const subtitle = document.getElementById('overview-subtitle');
             const totalSkus = productsData.reduce((n, p) => n + ((p.skus && p.skus.length) ? p.skus.length : 0), 0);
-            if (subtitle) subtitle.textContent = '共 ' + productsData.length + ' 个产品 · ' + totalSkus + ' 个规格，横向对比品类、品种与指标。';
+            if (subtitle) subtitle.textContent = '共 ' + productsData.length + ' 个产品 · ' + totalSkus + ' 个规格，汇总全部产品的品类、品种、工艺、风味、包装与指标。';
             if (overviewCount) overviewCount.textContent = productsData.length;
             if (!productsData.length) {
                 container.innerHTML = '<p class="p-6 text-sm text-on-surface-variant">暂无产品数据</p>';
                 return;
             }
-            const HEADERS = ['品类', '品种', '产品名称', '序号', '原麦汁浓度', '酒精度', '保质期'];
+            const HEADERS = ['品类', '品种', '产品名称', '对应市售产品品类', '工艺特点', '风味特点', '包装形式', '生产工厂', 'SC证', '序号', '原麦汁浓度', '酒精度', '保质期'];
             const thead = HEADERS.map(l =>
                 '<th class="px-4 py-3 text-left text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container-low border-b border-outline-variant/60 whitespace-nowrap">' + l + '</th>'
             ).join('');
@@ -590,7 +590,13 @@
                     if (i === 0) {
                         cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-top bg-surface-container-low/40 border-r border-outline-variant/40"><span class="inline-flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color:' + color + '"></span><span class="font-bold text-on-surface">' + p.category + '</span></span></td>';
                         cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-top bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant font-semibold">' + p.variety + '</td>';
-                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 align-top bg-surface-container-low/40 border-r border-outline-variant/40"><button type="button" data-overview-product-id="' + p.id + '" class="font-bold text-primary hover:underline text-left">' + p.name + '</button></td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-top bg-surface-container-low/40 border-r border-outline-variant/40"><button type="button" data-overview-product-id="' + p.id + '" class="font-bold text-primary hover:underline text-left">' + p.name + '</button></td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 align-top bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed min-w-[160px] max-w-[220px]">' + p.claim + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 align-top bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed min-w-[160px] max-w-[240px]">' + p.process + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 align-top bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed min-w-[200px] max-w-[280px]">' + p.flavor + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 align-top bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed min-w-[180px] max-w-[260px]">' + p.packaging + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-top bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant">' + (p.factory || '—') + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-top bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant">' + (p.sc || '—') + '</td>';
                     }
                     cells += '<td class="px-4 py-3 whitespace-nowrap text-on-surface-variant font-semibold">' + ((s['序号'] === undefined || s['序号'] === null) ? '—' : s['序号']) + '</td>';
                     cells += '<td class="px-4 py-3 whitespace-nowrap text-on-surface font-semibold">' + (s['原麦汁浓度'] || '—') + '</td>';
