@@ -145,10 +145,12 @@
                     
                     <!-- Breadcrumbs & Title -->
                     <div>
-                        <nav class="flex items-center text-xs text-outline-variant mb-2 font-medium">
+                        <nav class="flex items-center text-xs text-outline-variant mb-2 font-medium flex-wrap gap-y-1">
                             <a href="#" class="hover:text-primary transition-colors">产品列表</a>
                             <span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
-                            <span class="text-on-surface-variant" id="breadcrumb-name"></span>
+                            <span class="text-on-surface-variant" id="breadcrumb-category"></span>
+                            <span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
+                            <span class="text-on-surface-variant" id="breadcrumb-variety"></span>
                         </nav>
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3">
                             <h2 class="text-2xl md:text-3xl font-bold text-on-surface flex items-baseline gap-3">
@@ -157,15 +159,15 @@
                         </div>
                     </div>
 
-                    <!-- ========== 产品信息：三大分组 ========== -->
+                    <!-- ========== 产品信息：基本信息 ========== -->
 
-                    <!-- 酒液类型 -->
+                    <!-- 基本信息 -->
                     <section class="flex flex-col gap-3">
                         <h3 class="text-sm font-extrabold text-primary flex items-center gap-2">
-                            <span class="material-symbols-outlined text-base">local_drink</span>
-                            <span>酒液类型</span>
+                            <span class="material-symbols-outlined text-base">info</span>
+                            <span>基本信息</span>
                         </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
                                 <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">品类</label>
                                 <p class="text-sm font-bold text-on-surface mt-1" id="liquid-category"></p>
@@ -174,37 +176,43 @@
                                 <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">品种</label>
                                 <p class="text-sm font-bold text-on-surface mt-1" id="liquid-variety"></p>
                             </div>
+                        </div>
+                        <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                            <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">对应市售产品品类</label>
+                            <p class="text-sm font-medium text-on-surface mt-1 leading-relaxed" id="product-claim"></p>
+                        </div>
+                        <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                            <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">工艺特点</label>
+                            <p class="text-sm font-medium text-on-surface mt-1 leading-relaxed" id="product-process"></p>
+                        </div>
+                        <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                            <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">风味特点</label>
+                            <p class="text-sm font-medium text-on-surface mt-1 leading-relaxed" id="product-flavor"></p>
+                        </div>
+                        <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                            <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">包装形式</label>
+                            <p class="text-sm font-medium text-on-surface mt-1 leading-relaxed whitespace-pre-line" id="product-packaging"></p>
+                        </div>
+                        <div id="factory-sc-row" class="grid grid-cols-1 sm:grid-cols-2 gap-3 hidden">
                             <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">市售宣称</label>
-                                <p class="text-sm font-bold text-on-surface mt-1" id="liquid-claim"></p>
+                                <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">生产工厂</label>
+                                <p class="text-sm font-bold text-on-surface mt-1" id="product-factory"></p>
+                            </div>
+                            <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">SC证</label>
+                                <p class="text-sm font-bold text-on-surface mt-1" id="product-sc"></p>
                             </div>
                         </div>
                     </section>
 
-                    <!-- 特性指标 -->
+                    <!-- 产品指标明细 -->
                     <section class="flex flex-col gap-3">
                         <h3 class="text-sm font-extrabold text-primary flex items-center gap-2">
                             <span class="material-symbols-outlined text-base">monitoring</span>
-                            <span>特性指标</span>
+                            <span>产品指标明细</span>
                         </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">原麦汁浓度</label>
-                                <p class="text-lg font-bold text-primary mt-1" id="spec-wort"></p>
-                            </div>
-                            <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">酒精度 (ABV)</label>
-                                <p class="text-lg font-bold text-primary mt-1" id="spec-abv"></p>
-                            </div>
-                        </div>
-                        <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                            <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">保质期</label>
-                            <p class="text-sm font-medium text-on-surface mt-1 leading-relaxed whitespace-pre-line" id="spec-shelf-life"></p>
-                        </div>
-                        <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                            <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">产品特点</label>
-                            <p class="text-sm font-medium text-on-surface mt-1 leading-relaxed" id="spec-features"></p>
-                        </div>
+                        <p class="text-xs text-on-surface-variant" id="sku-subtitle">该产品各规格的原麦汁浓度、酒精度与保质期。</p>
+                        <div id="sku-table-container" class="bg-white border border-outline-variant/60 rounded-xl shadow-sm overflow-hidden"></div>
                     </section>
 
                     <!-- 包装形式对比 -->
@@ -236,16 +244,34 @@
 
         // --- DOM Elements ---
         const productRail = document.getElementById('product-rail');
-        
-        // --- Render Product Rail（按品类分组、可折叠；特种按品种二级分组） ---
-        const SPECIAL_CATEGORY = '特种';
 
-        function railCategoryOf(prod) {
-            return (prod.liquidType && prod.liquidType.category) ? prod.liquidType.category : '未分类';
-        }
-
-        function railVarietyOf(prod) {
-            return (prod.liquidType && prod.liquidType.variety) ? prod.liquidType.variety : '未分类品种';
+        // --- 将 products_all.json 的嵌套结构展开为扁平产品列表 ---
+        function flattenProducts(raw) {
+            const list = [];
+            const root = (raw && raw['产品库']) ? raw['产品库'] : (raw || {});
+            Object.keys(root).forEach(category => {
+                const varieties = root[category] || {};
+                Object.keys(varieties).forEach(variety => {
+                    const products = varieties[variety] || {};
+                    Object.keys(products).forEach(name => {
+                        const f = products[name] || {};
+                        list.push({
+                            id: category + '/' + variety + '/' + name,
+                            category: category,
+                            variety: variety,
+                            name: name,
+                            claim: f['对应市售产品品类'] || '—',
+                            process: f['工艺特点'] || '—',
+                            flavor: f['风味特点'] || '—',
+                            packaging: f['包装形式'] || '—',
+                            factory: f['生产工厂'] || '',
+                            sc: f['SC证'] || '',
+                            skus: Array.isArray(f['产品列表']) ? f['产品列表'] : []
+                        });
+                    });
+                });
+            });
+            return list;
         }
 
         function productItemHtml(prod) {
@@ -259,37 +285,39 @@
         }
 
         function renderRail() {
-            // 按「品类」分组，保持首次出现的顺序
+            // 按「品类 → 品种」两级分组，保持首次出现的顺序
             const groups = [];
-            const order = {};
+            const catIndex = {};
+            const varIndex = {};
             productsData.forEach(prod => {
-                const cat = railCategoryOf(prod);
-                if (!(cat in order)) { order[cat] = groups.length; groups.push({ category: cat, items: [] }); }
-                groups[order[cat]].items.push(prod);
-            });
-
-            // 「特种」品类再按「品种」二级分组
-            groups.forEach(g => {
-                if (g.category === SPECIAL_CATEGORY) {
-                    const subs = [];
-                    const subOrder = {};
-                    g.items.forEach(prod => {
-                        const v = railVarietyOf(prod);
-                        if (!(v in subOrder)) { subOrder[v] = subs.length; subs.push({ variety: v, items: [] }); }
-                        subs[subOrder[v]].items.push(prod);
-                    });
-                    g.subgroups = subs;
+                let g;
+                if (prod.category in catIndex) {
+                    g = groups[catIndex[prod.category]];
+                } else {
+                    catIndex[prod.category] = groups.length;
+                    g = { category: prod.category, varieties: [], count: 0 };
+                    groups.push(g);
                 }
+                g.count += 1;
+                const vkey = prod.category + '||' + prod.variety;
+                let vg;
+                if (vkey in varIndex) {
+                    vg = g.varieties[varIndex[vkey]];
+                } else {
+                    varIndex[vkey] = g.varieties.length;
+                    vg = { variety: prod.variety, items: [] };
+                    g.varieties.push(vg);
+                }
+                vg.items.push(prod);
             });
             railGroups = groups;
 
-            // 自动展开当前选中产品所在的品类（特种同时展开其品种）
+            // 自动展开当前选中产品所在的品类与品种
             if (activeProductId) {
                 const active = productsData.find(p => p.id === activeProductId);
                 if (active) {
-                    const cat = railCategoryOf(active);
-                    expandedCategories.add(cat);
-                    if (cat === SPECIAL_CATEGORY) expandedVarieties.add(railVarietyOf(active));
+                    expandedCategories.add(active.category);
+                    expandedVarieties.add(active.category + '||' + active.variety);
                 }
             }
 
@@ -301,36 +329,32 @@
                 const labelClass = expanded ? 'text-primary' : 'text-on-surface-variant';
                 const countClass = expanded ? 'bg-primary/10 text-primary' : 'bg-surface-container text-on-surface-variant';
 
-                let body = '';
-                if (g.subgroups) {
-                    body = g.subgroups.map((sg, si) => {
-                        const vExpanded = expandedVarieties.has(sg.variety);
-                        const vChevClass = vExpanded ? 'rotate-90 text-primary' : 'text-outline-variant';
-                        const vLabelClass = vExpanded ? 'text-primary' : 'text-on-surface-variant';
-                        const vCountClass = vExpanded ? 'bg-primary/10 text-primary' : 'bg-surface-container text-on-surface-variant';
-                        return `
-                            <div class="flex flex-col">
-                                <button type="button" data-var-index="${gi}-${si}" class="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-left transition-colors hover:bg-surface-container-low">
-                                    <span class="material-symbols-outlined text-base transition-transform chev ${vChevClass}">chevron_right</span>
-                                    <span class="text-xs font-semibold flex-1 truncate cat-label ${vLabelClass}">${sg.variety}</span>
-                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full cat-count ${vCountClass}">${sg.items.length}</span>
-                                </button>
-                                <div data-var-items="${gi}-${si}" class="flex flex-col gap-1 pl-3 ml-2 border-l border-outline-variant/40 mt-0.5 mb-1 ${vExpanded ? '' : 'hidden'}">
-                                    ${sg.items.map(productItemHtml).join('')}
-                                </div>
+                const body = g.varieties.map((vg, si) => {
+                    const vkey = g.category + '||' + vg.variety;
+                    const vExpanded = expandedVarieties.has(vkey);
+                    const vChevClass = vExpanded ? 'rotate-90 text-primary' : 'text-outline-variant';
+                    const vLabelClass = vExpanded ? 'text-primary' : 'text-on-surface-variant';
+                    const vCountClass = vExpanded ? 'bg-primary/10 text-primary' : 'bg-surface-container text-on-surface-variant';
+                    return `
+                        <div class="flex flex-col">
+                            <button type="button" data-var-index="${gi}-${si}" class="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-left transition-colors hover:bg-surface-container-low">
+                                <span class="material-symbols-outlined text-base transition-transform chev ${vChevClass}">chevron_right</span>
+                                <span class="text-xs font-semibold flex-1 truncate cat-label ${vLabelClass}">${vg.variety}</span>
+                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full cat-count ${vCountClass}">${vg.items.length}</span>
+                            </button>
+                            <div data-var-items="${gi}-${si}" class="flex flex-col gap-1 pl-3 ml-2 border-l border-outline-variant/40 mt-0.5 mb-1 ${vExpanded ? '' : 'hidden'}">
+                                ${vg.items.map(productItemHtml).join('')}
                             </div>
-                        `;
-                    }).join('');
-                } else {
-                    body = g.items.map(productItemHtml).join('');
-                }
+                        </div>
+                    `;
+                }).join('');
 
                 html += `
                     <div class="flex flex-col">
                         <button type="button" data-cat-index="${gi}" class="w-full flex items-center gap-1.5 px-2 py-2 rounded-lg text-left transition-colors hover:bg-surface-container-low">
                             <span class="material-symbols-outlined text-base transition-transform chev ${chevClass}">chevron_right</span>
                             <span class="text-xs font-bold uppercase tracking-wide flex-1 truncate cat-label ${labelClass}">${g.category}</span>
-                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full cat-count ${countClass}">${g.items.length}</span>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full cat-count ${countClass}">${g.count}</span>
                         </button>
                         <div data-cat-items="${gi}" class="flex flex-col gap-1 pl-3 ml-2 border-l border-outline-variant/40 mt-0.5 mb-1.5 ${expanded ? '' : 'hidden'}">
                             ${body}
@@ -384,13 +408,14 @@
 
         function toggleVariety(gi, si) {
             const g = railGroups[gi];
-            if (!g || !g.subgroups || !g.subgroups[si]) return;
-            const sg = g.subgroups[si];
+            if (!g || !g.varieties || !g.varieties[si]) return;
+            const vg = g.varieties[si];
+            const vkey = g.category + '||' + vg.variety;
             const items = productRail.querySelector('[data-var-items="' + gi + '-' + si + '"]');
             const header = productRail.querySelector('[data-var-index="' + gi + '-' + si + '"]');
             if (!items || !header) return;
-            const nowExpanded = !expandedVarieties.has(sg.variety);
-            if (nowExpanded) expandedVarieties.add(sg.variety); else expandedVarieties.delete(sg.variety);
+            const nowExpanded = !expandedVarieties.has(vkey);
+            if (nowExpanded) expandedVarieties.add(vkey); else expandedVarieties.delete(vkey);
             setHeaderState(header, nowExpanded);
             setContainerState(items, nowExpanded);
         }
@@ -421,20 +446,61 @@
             // Re-render rail to update active styling
             renderRail();
 
-            // Update details texts
-            document.getElementById('breadcrumb-name').textContent = prod.name;
+            // Update breadcrumb & title
+            document.getElementById('breadcrumb-category').textContent = prod.category;
+            document.getElementById('breadcrumb-variety').textContent = prod.variety;
             document.getElementById('display-name').textContent = prod.name;
 
-            const lt = prod.liquidType || {};
-            const sp = prod.specs || {};
+            // 基本信息
+            document.getElementById('liquid-category').textContent = prod.category;
+            document.getElementById('liquid-variety').textContent = prod.variety;
+            document.getElementById('product-claim').textContent = prod.claim;
+            document.getElementById('product-process').textContent = prod.process;
+            document.getElementById('product-flavor').textContent = prod.flavor;
+            document.getElementById('product-packaging').textContent = prod.packaging;
 
-            document.getElementById('liquid-category').textContent = lt.category || '—';
-            document.getElementById('liquid-variety').textContent = lt.variety || '—';
-            document.getElementById('liquid-claim').textContent = lt.claim || '—';
-            document.getElementById('spec-wort').textContent = sp.wort || '—';
-            document.getElementById('spec-abv').textContent = sp.abv || '—';
-            document.getElementById('spec-shelf-life').textContent = (sp.shelfLife || '—').replace(/\s+/g, '\n');
-            document.getElementById('spec-features').textContent = sp.features || '—';
+            // 生产工厂 / SC证（有值才显示）
+            const fsRow = document.getElementById('factory-sc-row');
+            const hasFactory = prod.factory && prod.factory.trim() !== '';
+            const hasSc = prod.sc && prod.sc.trim() !== '';
+            if (hasFactory || hasSc) {
+                fsRow.classList.remove('hidden');
+                document.getElementById('product-factory').textContent = hasFactory ? prod.factory : '—';
+                document.getElementById('product-sc').textContent = hasSc ? prod.sc : '—';
+            } else {
+                fsRow.classList.add('hidden');
+            }
+
+            // 产品指标明细（产品列表）
+            renderSkuTable(prod);
+        }
+
+        function renderSkuTable(prod) {
+            const container = document.getElementById('sku-table-container');
+            const subtitle = document.getElementById('sku-subtitle');
+            if (!container) return;
+            const skus = prod.skus || [];
+            if (subtitle) subtitle.textContent = '共 ' + skus.length + ' 个规格，列出原麦汁浓度、酒精度与保质期。';
+            if (!skus.length) {
+                container.innerHTML = '<p class="p-6 text-sm text-on-surface-variant">暂无规格数据</p>';
+                return;
+            }
+            const thead = ['序号', '原麦汁浓度', '酒精度', '保质期'].map(l =>
+                '<th class="px-4 py-3 text-left text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container-low border-b border-outline-variant/60 whitespace-nowrap">' + l + '</th>'
+            ).join('');
+            const tbody = skus.map(s => {
+                const no = (s['序号'] === undefined || s['序号'] === null) ? '—' : s['序号'];
+                const wort = s['原麦汁浓度'] || '—';
+                const abv = s['酒精度'] || '—';
+                const shelf = (s['保质期'] || '—').replace(/\s+/g, ' ');
+                return '<tr class="border-b border-outline-variant/40 last:border-0 hover:bg-surface-container-low/50 transition-colors align-top">' +
+                    '<td class="px-4 py-3 whitespace-nowrap text-on-surface-variant font-semibold">' + no + '</td>' +
+                    '<td class="px-4 py-3 whitespace-nowrap text-on-surface font-semibold">' + wort + '</td>' +
+                    '<td class="px-4 py-3 whitespace-nowrap text-on-surface font-semibold">' + abv + '</td>' +
+                    '<td class="px-4 py-3 text-on-surface leading-relaxed min-w-[260px]">' + shelf + '</td>' +
+                '</tr>';
+            }).join('');
+            container.innerHTML = '<div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr>' + thead + '</tr></thead><tbody>' + tbody + '</tbody></table></div>';
         }
 
         // --- Mobile Sidebar Logic ---
@@ -463,11 +529,11 @@
         // --- Load products from JSON ---
         async function loadProducts() {
             try {
-                const response = await fetch('products.json', { cache: 'no-store' });
-                if (!response.ok) throw new Error('Failed to load products.json');
-                productsData = await response.json();
+                const response = await fetch('products_all.json', { cache: 'no-store' });
+                if (!response.ok) throw new Error('Failed to load products_all.json');
+                productsData = flattenProducts(await response.json());
             } catch (err) {
-                console.warn('products.json 加载失败:', err);
+                console.warn('products_all.json 加载失败:', err);
                 productsData = [];
             }
         }
