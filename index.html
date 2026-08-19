@@ -265,6 +265,17 @@
         </main>
     </div>
 
+    <!-- 包装信息悬浮提示 -->
+    <div id="packaging-tooltip" class="fixed z-50 hidden pointer-events-none max-w-[88vw]">
+        <div class="rounded-xl border border-outline-variant/60 bg-surface-container-low/80 backdrop-blur-md shadow-2xl px-4 py-3">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-base text-primary">inventory_2</span>
+                <span class="text-sm font-extrabold text-on-surface">对应包装</span>
+            </div>
+            <div id="packaging-tooltip-body"></div>
+        </div>
+    </div>
+
     <script>
         // --- Product data loaded from JSON ---
         let productsData = [];
@@ -639,7 +650,7 @@
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words">' + p.claim + '</td>';
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words">' + p.process + '</td>';
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words">' + p.flavor + '</td>';
-                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words">' + p.packaging + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="js-packaging-cell px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words cursor-help">' + p.packaging + '</td>';
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant leading-snug break-words">' + (p.factory || '—') + '</td>';
                         cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant leading-snug break-all">' + (p.sc || '—') + '</td>';
                     }
@@ -784,6 +795,77 @@
             if (container) container.innerHTML = tableHtml;
             if (overviewContainer) overviewContainer.innerHTML = tableHtml;
         }
+
+        // --- 包装形式悬浮提示 ---
+        const packagingTooltip = document.getElementById('packaging-tooltip');
+        const packagingTooltipBody = document.getElementById('packaging-tooltip-body');
+
+        const PACKAGING_KEYWORD_MAP = [
+            { keyword: '马口铁桶', category: '马口铁桶' },
+            { keyword: '不锈钢桶', category: '不锈钢桶' },
+            { keyword: 'PET桶', category: 'PET桶' },
+            { keyword: '听', category: '易拉罐' },
+            { keyword: '瓶', category: '玻璃瓶' }
+        ];
+
+        function packagingCategoriesFor(text) {
+            const t = text || '';
+            return PACKAGING_KEYWORD_MAP.filter(m => t.indexOf(m.keyword) !== -1).map(m => m.category);
+        }
+
+        function buildPackagingTooltip(cats) {
+            const matches = packagingData.filter(p => cats.indexOf(p['分类']) !== -1);
+            if (!matches.length) return '';
+            const headers = ['分类', '规格', '材质', '包装规格', '高度(mm)', '直径(mm)', '备注'];
+            const thead = '<tr>' + headers.map(h =>
+                '<th class="px-2.5 py-1.5 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container/60 border-b border-outline-variant/50 whitespace-nowrap">' + h + '</th>'
+            ).join('') + '</tr>';
+            const tbody = matches.map(p => {
+                const dim = p['参数_mm'] || {};
+                const note = (dim['备注'] === undefined || dim['备注'] === null || dim['备注'] === '') ? '—' : dim['备注'];
+                return '<tr class="border-b border-outline-variant/40 last:border-0">' +
+                    '<td class="px-2.5 py-1.5 whitespace-nowrap font-bold text-on-surface">' + (p['分类'] || '—') + '</td>' +
+                    '<td class="px-2.5 py-1.5 whitespace-nowrap text-on-surface">' + formatVolume(p['规格_ml']) + '</td>' +
+                    '<td class="px-2.5 py-1.5 whitespace-nowrap text-on-surface">' + (p['材质'] || '—') + '</td>' +
+                    '<td class="px-2.5 py-1.5 whitespace-nowrap text-on-surface">' + formatPackSpec(p['包装规格']) + '</td>' +
+                    '<td class="px-2.5 py-1.5 whitespace-nowrap text-on-surface">' + dimText(dim['高度']) + '</td>' +
+                    '<td class="px-2.5 py-1.5 whitespace-nowrap text-on-surface">' + dimText(dim['直径']) + '</td>' +
+                    '<td class="px-2.5 py-1.5 whitespace-nowrap text-on-surface-variant">' + note + '</td>' +
+                '</tr>';
+            }).join('');
+            return '<div class="overflow-x-auto"><table class="w-max text-xs border-collapse"><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table></div>';
+        }
+
+        function showPackagingTooltip(cell) {
+            const cats = packagingCategoriesFor(cell.textContent || '');
+            const html = cats.length ? buildPackagingTooltip(cats) : '';
+            if (!html) { hidePackagingTooltip(); return; }
+            packagingTooltipBody.innerHTML = html;
+            packagingTooltip.classList.remove('hidden');
+            const rect = cell.getBoundingClientRect();
+            const tw = packagingTooltip.offsetWidth;
+            const th = packagingTooltip.offsetHeight;
+            const gap = 12;
+            let left = rect.left;
+            let top = rect.bottom + gap;
+            if (left + tw > window.innerWidth - 12) left = Math.max(12, window.innerWidth - tw - 12);
+            if (top + th > window.innerHeight - 12) top = Math.max(12, rect.top - th - gap);
+            packagingTooltip.style.left = left + 'px';
+            packagingTooltip.style.top = top + 'px';
+        }
+
+        function hidePackagingTooltip() {
+            packagingTooltip.classList.add('hidden');
+        }
+
+        document.getElementById('overview-table-container').addEventListener('mouseover', (e) => {
+            const cell = e.target.closest('.js-packaging-cell');
+            if (cell) showPackagingTooltip(cell);
+        });
+        document.getElementById('overview-table-container').addEventListener('mouseout', (e) => {
+            if (e.target.closest('.js-packaging-cell')) hidePackagingTooltip();
+        });
+        window.addEventListener('scroll', hidePackagingTooltip, true);
 
         // --- 搜索产品 ---
         const searchInput = document.getElementById('search-input');
