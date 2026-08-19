@@ -148,9 +148,9 @@
             <div class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-surface">
 
                 <!-- ========== 主产品视图 ========== -->
-                <div id="main-content-view" class="max-w-5xl mx-auto flex flex-col h-full gap-6">
+                <div id="main-content-view" class="w-full flex flex-col h-full gap-6">
                     <!-- 产品信息视图 -->
-                    <div id="product-view" class="flex flex-col gap-6">
+                    <div id="product-view" class="flex flex-col gap-6 max-w-5xl mx-auto w-full">
                     
                     <!-- Breadcrumbs & Title -->
                     <div>
@@ -575,9 +575,24 @@
                 container.innerHTML = '<p class="p-6 text-sm text-on-surface-variant">暂无产品数据</p>';
                 return;
             }
-            const HEADERS = ['品类', '品种', '产品名称', '对应市售产品品类', '工艺特点', '风味特点', '包装形式', '生产工厂', 'SC证', '序号', '原麦汁浓度', '酒精度', '保质期'];
-            const thead = HEADERS.map(l =>
-                '<th class="px-4 py-3 text-left text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container-low border-b border-outline-variant/60 whitespace-nowrap">' + l + '</th>'
+            const COLS = [
+                { label: '品类', w: '7%' },
+                { label: '品种', w: '8%' },
+                { label: '产品名称', w: '8%' },
+                { label: '对应市售产品品类', w: '7%' },
+                { label: '工艺特点', w: '9%' },
+                { label: '风味特点', w: '9%' },
+                { label: '包装形式', w: '12%' },
+                { label: '生产工厂', w: '6%' },
+                { label: 'SC证', w: '7%' },
+                { label: '序号', w: '4%' },
+                { label: '原麦汁浓度', w: '6%' },
+                { label: '酒精度', w: '5%' },
+                { label: '保质期', w: '12%' }
+            ];
+            const colgroup = '<colgroup>' + COLS.map(c => '<col style="width:' + c.w + '">').join('') + '</colgroup>';
+            const thead = COLS.map(l =>
+                '<th class="px-2.5 py-3 text-left text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container-low border-b border-outline-variant/60 leading-snug align-middle">' + l.label + '</th>'
             ).join('');
 
             let tbody = '';
@@ -590,31 +605,31 @@
                 skus.forEach((s, i) => {
                     let cells = '';
                     if (i === 0) {
-                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-middle bg-surface-container-low/40 border-r border-outline-variant/40"><span class="inline-flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color:' + color + '"></span><span class="font-bold text-on-surface">' + p.category + '</span></span></td>';
-                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant font-semibold">' + p.variety + '</td>';
-                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-middle bg-surface-container-low/40 border-r border-outline-variant/40"><button type="button" data-overview-product-id="' + p.id + '" class="font-bold text-primary hover:underline text-left">' + p.name + '</button></td>';
-                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed min-w-[160px] max-w-[220px]">' + p.claim + '</td>';
-                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed min-w-[160px] max-w-[240px]">' + p.process + '</td>';
-                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed min-w-[200px] max-w-[280px]">' + p.flavor + '</td>';
-                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed min-w-[180px] max-w-[260px]">' + p.packaging + '</td>';
-                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant">' + (p.factory || '—') + '</td>';
-                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant">' + (p.sc || '—') + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40"><span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color:' + color + '"></span><span class="font-bold text-on-surface leading-snug">' + p.category + '</span></span></td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant font-semibold leading-snug">' + p.variety + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40"><button type="button" data-overview-product-id="' + p.id + '" class="font-bold text-primary hover:underline text-left leading-snug">' + p.name + '</button></td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words">' + p.claim + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words">' + p.process + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words">' + p.flavor + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface leading-relaxed break-words">' + p.packaging + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant leading-snug break-words">' + (p.factory || '—') + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 align-middle bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant leading-snug break-all">' + (p.sc || '—') + '</td>';
                     }
-                    cells += '<td class="px-4 py-3 whitespace-nowrap align-middle text-on-surface-variant font-semibold">' + ((s['序号'] === undefined || s['序号'] === null) ? '—' : s['序号']) + '</td>';
-                    cells += '<td class="px-4 py-3 whitespace-nowrap align-middle text-on-surface font-semibold">' + (s['原麦汁浓度'] || '—') + '</td>';
-                    cells += '<td class="px-4 py-3 whitespace-nowrap align-middle text-on-surface font-semibold">' + (s['酒精度'] || '—') + '</td>';
+                    cells += '<td class="px-2.5 py-3 whitespace-nowrap align-middle text-on-surface-variant font-semibold">' + ((s['序号'] === undefined || s['序号'] === null) ? '—' : s['序号']) + '</td>';
+                    cells += '<td class="px-2.5 py-3 whitespace-nowrap align-middle text-on-surface font-semibold">' + (s['原麦汁浓度'] || '—') + '</td>';
+                    cells += '<td class="px-2.5 py-3 whitespace-nowrap align-middle text-on-surface font-semibold">' + (s['酒精度'] || '—') + '</td>';
                     if (shelfSame) {
                         if (i === 0) {
-                            cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 text-on-surface leading-relaxed min-w-[280px] align-middle">' + shelfValues[0] + '</td>';
+                            cells += '<td rowspan="' + rowCount + '" class="px-2.5 py-3 text-on-surface leading-relaxed break-words align-middle">' + shelfValues[0] + '</td>';
                         }
                     } else {
-                        cells += '<td class="px-4 py-3 text-on-surface leading-relaxed min-w-[280px] align-middle">' + shelfValues[i] + '</td>';
+                        cells += '<td class="px-2.5 py-3 text-on-surface leading-relaxed break-words align-middle">' + shelfValues[i] + '</td>';
                     }
                     tbody += '<tr class="border-b border-outline-variant/40 last:border-0 hover:bg-surface-container-low/50 transition-colors align-middle">' + cells + '</tr>';
                 });
             });
 
-            container.innerHTML = '<div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr>' + thead + '</tr></thead><tbody>' + tbody + '</tbody></table></div>';
+            container.innerHTML = '<table class="w-full text-sm border-collapse table-fixed">' + colgroup + '<thead><tr>' + thead + '</tr></thead><tbody>' + tbody + '</tbody></table>';
         }
 
         document.getElementById('overview-table-container').addEventListener('click', (e) => {
