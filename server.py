@@ -3,12 +3,12 @@
 """
 产品信息库本地服务器
 功能：
-  1. 提供静态文件（code_artifact.html / products.json / 图片等）
+  1. 提供静态文件（index.html / products.json / 图片等）
   2. 提供 POST /api/save 接口，把前端编辑后的数据写回 products.json
 
 启动方式（在终端里，先进入本文件夹，然后运行）：
     python3 server.py
-之后浏览器打开 http://localhost:8000 （会自动跳到主页面）。
+之后浏览器打开 http://localhost:8000 （直接显示主页面）。
 保持这个终端窗口开启；按 Ctrl+C 停止服务器。
 """
 import json
@@ -21,15 +21,6 @@ PORT = 8000
 
 
 class Handler(SimpleHTTPRequestHandler):
-    def do_GET(self):
-        # 打开根路径时自动跳转到主页面
-        if self.path in ("/", ""):
-            self.send_response(302)
-            self.send_header("Location", "/code_artifact.html")
-            self.end_headers()
-            return
-        super().do_GET()
-
     def do_POST(self):
         if self.path == "/api/save":
             try:
