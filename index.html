@@ -102,11 +102,16 @@
         </div>
 
         <!-- 总览入口 -->
-        <div class="px-4 mb-2 flex-shrink-0">
+        <div class="px-4 mb-2 flex-shrink-0 flex flex-col gap-1">
             <button id="overview-btn" type="button" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-colors text-on-surface-variant hover:bg-surface-container-low">
                 <span class="material-symbols-outlined text-base">table_chart</span>
-                <span class="text-sm font-bold flex-1 truncate">总览</span>
+                <span class="text-sm font-bold flex-1 truncate">酒液总览</span>
                 <span id="overview-count" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant"></span>
+            </button>
+            <button id="packaging-overview-btn" type="button" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-colors text-on-surface-variant hover:bg-surface-container-low">
+                <span class="material-symbols-outlined text-base">inventory_2</span>
+                <span class="text-sm font-bold flex-1 truncate">包装总览</span>
+                <span id="packaging-overview-count" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant"></span>
             </button>
         </div>
 
@@ -235,13 +240,22 @@
                     </section>
                     </div>
 
-                    <!-- 总览视图 -->
+                    <!-- 总览视图（酒液） -->
                     <div id="overview-view" class="flex flex-col gap-6 hidden">
                         <div>
-                            <h2 class="text-2xl md:text-3xl font-bold text-on-surface">产品总览</h2>
+                            <h2 class="text-2xl md:text-3xl font-bold text-on-surface">酒液总览</h2>
                             <p class="text-sm text-on-surface-variant mt-1" id="overview-subtitle">横向对比全部产品的品类、品种与指标。</p>
                         </div>
                         <div id="overview-table-container" class="bg-white border border-outline-variant/60 rounded-xl shadow-sm overflow-hidden"></div>
+                    </div>
+
+                    <!-- 总览视图（包装） -->
+                    <div id="packaging-overview-view" class="flex flex-col gap-6 hidden">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-on-surface">包装总览</h2>
+                            <p class="text-sm text-on-surface-variant mt-1" id="packaging-overview-subtitle">横向对比全部包装形式的材质、容量、规格与尺寸。</p>
+                        </div>
+                        <div id="packaging-overview-container" class="bg-white border border-outline-variant/60 rounded-xl shadow-sm overflow-hidden"></div>
                     </div>
                 </div>
                 </div>
@@ -539,30 +553,45 @@
         const overviewView = document.getElementById('overview-view');
         const overviewBtn = document.getElementById('overview-btn');
         const overviewCount = document.getElementById('overview-count');
+        const packagingOverviewView = document.getElementById('packaging-overview-view');
+        const packagingOverviewBtn = document.getElementById('packaging-overview-btn');
 
-        function setOverviewActive(active) {
-            if (active) {
-                overviewBtn.classList.add('bg-primary/10', 'text-primary');
-                overviewBtn.classList.remove('text-on-surface-variant');
-            } else {
-                overviewBtn.classList.remove('bg-primary/10', 'text-primary');
-                overviewBtn.classList.add('text-on-surface-variant');
-            }
+        function setNavActive(activeBtn) {
+            [overviewBtn, packagingOverviewBtn].forEach(b => {
+                if (b === activeBtn) {
+                    b.classList.add('bg-primary/10', 'text-primary');
+                    b.classList.remove('text-on-surface-variant');
+                } else {
+                    b.classList.remove('bg-primary/10', 'text-primary');
+                    b.classList.add('text-on-surface-variant');
+                }
+            });
+        }
+
+        function showOnly(view) {
+            [productView, overviewView, packagingOverviewView].forEach(v => {
+                if (v === view) v.classList.remove('hidden');
+                else v.classList.add('hidden');
+            });
         }
 
         function showOverview() {
-            productView.classList.add('hidden');
-            overviewView.classList.remove('hidden');
-            setOverviewActive(true);
+            showOnly(overviewView);
+            setNavActive(overviewBtn);
+        }
+
+        function showPackagingOverview() {
+            showOnly(packagingOverviewView);
+            setNavActive(packagingOverviewBtn);
         }
 
         function showProductView() {
-            overviewView.classList.add('hidden');
-            productView.classList.remove('hidden');
-            setOverviewActive(false);
+            showOnly(productView);
+            setNavActive(null);
         }
 
         overviewBtn.addEventListener('click', showOverview);
+        packagingOverviewBtn.addEventListener('click', showPackagingOverview);
 
         function renderOverviewTable() {
             const container = document.getElementById('overview-table-container');
@@ -711,11 +740,18 @@
 
         function renderPackagingTable() {
             const container = document.getElementById('packaging-table-container');
-            if (!container) return;
+            const overviewContainer = document.getElementById('packaging-overview-container');
             const subtitle = document.getElementById('packaging-subtitle');
-            if (subtitle) subtitle.textContent = '共 ' + packagingData.length + ' 种包装形式，横向对比材质、容量、包装规格、高度与直径等参数。';
+            const overviewSubtitle = document.getElementById('packaging-overview-subtitle');
+            const packagingCount = document.getElementById('packaging-overview-count');
+            const totalText = '共 ' + packagingData.length + ' 种包装形式，横向对比材质、容量、包装规格、高度与直径等参数。';
+            if (subtitle) subtitle.textContent = totalText;
+            if (overviewSubtitle) overviewSubtitle.textContent = totalText;
+            if (packagingCount) packagingCount.textContent = packagingData.length;
             if (!packagingData.length) {
-                container.innerHTML = '<p class="p-6 text-sm text-on-surface-variant">暂无包装数据</p>';
+                const empty = '<p class="p-6 text-sm text-on-surface-variant">暂无包装数据</p>';
+                if (container) container.innerHTML = empty;
+                if (overviewContainer) overviewContainer.innerHTML = empty;
                 return;
             }
             const HEADERS = ['分类', '规格', '材质', '包装规格', '高度 (mm)', '直径 (mm)', '图示', '备注'];
@@ -744,7 +780,9 @@
                 return '<tr class="border-b border-outline-variant/40 last:border-0 hover:bg-surface-container-low/50 transition-colors">' + cells + '</tr>';
             }).join('');
 
-            container.innerHTML = '<div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr>' + thead + '</tr></thead><tbody>' + tbody + '</tbody></table></div>';
+            const tableHtml = '<div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr>' + thead + '</tr></thead><tbody>' + tbody + '</tbody></table></div>';
+            if (container) container.innerHTML = tableHtml;
+            if (overviewContainer) overviewContainer.innerHTML = tableHtml;
         }
 
         // --- 搜索产品 ---
