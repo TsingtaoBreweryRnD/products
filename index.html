@@ -100,7 +100,16 @@
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
-        
+
+        <!-- 总览入口 -->
+        <div class="px-4 mb-2 flex-shrink-0">
+            <button id="overview-btn" type="button" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-colors text-on-surface-variant hover:bg-surface-container-low">
+                <span class="material-symbols-outlined text-base">table_chart</span>
+                <span class="text-sm font-bold flex-1 truncate">总览</span>
+                <span id="overview-count" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant"></span>
+            </button>
+        </div>
+
         <!-- Dynamic Product List replaces static nav -->
         <div id="product-rail" class="flex-1 overflow-y-auto flex flex-col gap-2 px-4 pb-4 no-scrollbar">
             <!-- Dynamically populated by JS -->
@@ -224,6 +233,15 @@
                         <p class="text-xs text-on-surface-variant" id="packaging-subtitle">横向对比材质、容量、包装规格、高度与直径等参数。</p>
                         <div id="packaging-table-container" class="bg-white border border-outline-variant/60 rounded-xl shadow-sm overflow-hidden"></div>
                     </section>
+                    </div>
+
+                    <!-- 总览视图 -->
+                    <div id="overview-view" class="flex flex-col gap-6 hidden">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-on-surface">产品总览</h2>
+                            <p class="text-sm text-on-surface-variant mt-1" id="overview-subtitle">横向对比全部产品的品类、品种与指标。</p>
+                        </div>
+                        <div id="overview-table-container" class="bg-white border border-outline-variant/60 rounded-xl shadow-sm overflow-hidden"></div>
                     </div>
                 </div>
                 </div>
@@ -443,6 +461,9 @@
             const prod = productsData.find(p => p.id === id);
             if(!prod) return;
 
+            // 切回产品详情视图（若当前在总览视图）
+            showProductView();
+
             // Re-render rail to update active styling
             renderRail();
 
@@ -502,6 +523,90 @@
             }).join('');
             container.innerHTML = '<div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr>' + thead + '</tr></thead><tbody>' + tbody + '</tbody></table></div>';
         }
+
+        // --- 总览视图 ---
+        const BEER_CATEGORY_COLORS = {
+            '拉格': '#166c42',
+            '艾尔': '#0c5fae',
+            '特种啤酒': '#8b5000'
+        };
+
+        function beerCategoryColor(cat) {
+            return BEER_CATEGORY_COLORS[cat] || '#5f6368';
+        }
+
+        const productView = document.getElementById('product-view');
+        const overviewView = document.getElementById('overview-view');
+        const overviewBtn = document.getElementById('overview-btn');
+        const overviewCount = document.getElementById('overview-count');
+
+        function setOverviewActive(active) {
+            if (active) {
+                overviewBtn.classList.add('bg-primary/10', 'text-primary');
+                overviewBtn.classList.remove('text-on-surface-variant');
+            } else {
+                overviewBtn.classList.remove('bg-primary/10', 'text-primary');
+                overviewBtn.classList.add('text-on-surface-variant');
+            }
+        }
+
+        function showOverview() {
+            productView.classList.add('hidden');
+            overviewView.classList.remove('hidden');
+            setOverviewActive(true);
+        }
+
+        function showProductView() {
+            overviewView.classList.add('hidden');
+            productView.classList.remove('hidden');
+            setOverviewActive(false);
+        }
+
+        overviewBtn.addEventListener('click', showOverview);
+
+        function renderOverviewTable() {
+            const container = document.getElementById('overview-table-container');
+            if (!container) return;
+            const subtitle = document.getElementById('overview-subtitle');
+            const totalSkus = productsData.reduce((n, p) => n + ((p.skus && p.skus.length) ? p.skus.length : 0), 0);
+            if (subtitle) subtitle.textContent = '共 ' + productsData.length + ' 个产品 · ' + totalSkus + ' 个规格，横向对比品类、品种与指标。';
+            if (overviewCount) overviewCount.textContent = productsData.length;
+            if (!productsData.length) {
+                container.innerHTML = '<p class="p-6 text-sm text-on-surface-variant">暂无产品数据</p>';
+                return;
+            }
+            const HEADERS = ['品类', '品种', '产品名称', '序号', '原麦汁浓度', '酒精度', '保质期'];
+            const thead = HEADERS.map(l =>
+                '<th class="px-4 py-3 text-left text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container-low border-b border-outline-variant/60 whitespace-nowrap">' + l + '</th>'
+            ).join('');
+
+            let tbody = '';
+            productsData.forEach(p => {
+                const skus = (p.skus && p.skus.length) ? p.skus : [{}];
+                const color = beerCategoryColor(p.category);
+                const rowCount = skus.length;
+                skus.forEach((s, i) => {
+                    let cells = '';
+                    if (i === 0) {
+                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-top bg-surface-container-low/40 border-r border-outline-variant/40"><span class="inline-flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color:' + color + '"></span><span class="font-bold text-on-surface">' + p.category + '</span></span></td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 whitespace-nowrap align-top bg-surface-container-low/40 border-r border-outline-variant/40 text-on-surface-variant font-semibold">' + p.variety + '</td>';
+                        cells += '<td rowspan="' + rowCount + '" class="px-4 py-3 align-top bg-surface-container-low/40 border-r border-outline-variant/40"><button type="button" data-overview-product-id="' + p.id + '" class="font-bold text-primary hover:underline text-left">' + p.name + '</button></td>';
+                    }
+                    cells += '<td class="px-4 py-3 whitespace-nowrap text-on-surface-variant font-semibold">' + ((s['序号'] === undefined || s['序号'] === null) ? '—' : s['序号']) + '</td>';
+                    cells += '<td class="px-4 py-3 whitespace-nowrap text-on-surface font-semibold">' + (s['原麦汁浓度'] || '—') + '</td>';
+                    cells += '<td class="px-4 py-3 whitespace-nowrap text-on-surface font-semibold">' + (s['酒精度'] || '—') + '</td>';
+                    cells += '<td class="px-4 py-3 text-on-surface leading-relaxed min-w-[280px]">' + ((s['保质期'] || '—').replace(/\s+/g, ' ')) + '</td>';
+                    tbody += '<tr class="border-b border-outline-variant/40 last:border-0 hover:bg-surface-container-low/50 transition-colors align-top">' + cells + '</tr>';
+                });
+            });
+
+            container.innerHTML = '<div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr>' + thead + '</tr></thead><tbody>' + tbody + '</tbody></table></div>';
+        }
+
+        document.getElementById('overview-table-container').addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-overview-product-id]');
+            if (btn) selectProduct(btn.getAttribute('data-overview-product-id'));
+        });
 
         // --- Mobile Sidebar Logic ---
         const sidebar = document.getElementById('sidebar');
@@ -670,6 +775,7 @@
                 activeProductId = productsData[0].id;
             }
             renderRail();
+            renderOverviewTable();
             if (activeProductId) {
                 selectProduct(activeProductId);
             }
