@@ -356,7 +356,7 @@
                 return;
             }
             const thead = ['序号', '原麦汁浓度', '酒精度', '保质期'].map(l =>
-                '<th class="px-4 py-3 text-left text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container-low border-b border-outline-variant/60 whitespace-nowrap">' + l + '</th>'
+                '<th class="px-4 py-3 text-center text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container-low border-b border-outline-variant/60 whitespace-nowrap">' + l + '</th>'
             ).join('');
             const tbody = skus.map(s => {
                 const no = (s['序号'] === undefined || s['序号'] === null) ? '—' : s['序号'];
@@ -533,7 +533,7 @@
             ];
             const colgroup = '<colgroup>' + COLS.map(c => '<col style="width:' + c.w + '">').join('') + '</colgroup>';
             const thead = COLS.map(l =>
-                '<th class="px-2.5 py-3 text-left text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container-low border-b border-outline-variant/60 leading-snug align-middle">' + l.label + '</th>'
+                '<th class="px-2.5 py-3 text-center text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container-low border-b border-outline-variant/60 leading-snug align-middle">' + l.label + '</th>'
             ).join('');
 
             let tbody = '';
@@ -670,7 +670,7 @@
             }
             const HEADERS = ['分类', '规格', '材质', '包装规格', '高度 (mm)', '直径 (mm)', '图示', '备注'];
             const thead = HEADERS.map(l =>
-                '<th class="px-4 py-3 text-left text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container-low border-b border-outline-variant/60 whitespace-nowrap">' + l + '</th>'
+                '<th class="px-4 py-3 text-center text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container-low border-b border-outline-variant/60 whitespace-nowrap">' + l + '</th>'
             ).join('');
 
             const tbody = packagingData.map((p, i) => {
@@ -756,7 +756,7 @@
             if (!matches.length) return '';
             const headers = ['图片', '分类', '规格', '材质', '包装规格', '高度(mm)', '直径(mm)', '备注'];
             const thead = '<tr>' + headers.map(h =>
-                '<th class="px-2.5 py-1.5 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container/60 border-b border-outline-variant/50 whitespace-nowrap">' + h + '</th>'
+                '<th class="px-2.5 py-1.5 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container/60 border-b border-outline-variant/50 whitespace-nowrap">' + h + '</th>'
             ).join('') + '</tr>';
             const tbody = matches.map(p => {
                 const dim = p['参数_mm'] || {};
