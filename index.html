@@ -741,7 +741,8 @@
             try {
                 const res = await fetch('packaging.json', { cache: 'no-store' });
                 if (!res.ok) throw new Error('Failed to load packaging.json');
-                packagingData = await res.json();
+                // 包装图片按 packaging.json 数组顺序一一对应：第 N 条 → package_N.png
+                packagingData = (await res.json()).map((p, i) => ({ ...p, 图片: `package_${i + 1}.png` }));
             } catch (err) {
                 console.warn('包装数据加载失败:', err);
                 packagingData = [];
@@ -800,30 +801,67 @@
         const packagingTooltip = document.getElementById('packaging-tooltip');
         const packagingTooltipBody = document.getElementById('packaging-tooltip-body');
 
-        const PACKAGING_KEYWORD_MAP = [
-            { keyword: '马口铁桶', category: '马口铁桶' },
-            { keyword: '不锈钢桶', category: '不锈钢桶' },
-            { keyword: 'PET桶', category: 'PET桶' },
-            { keyword: '听', category: '易拉罐' },
-            { keyword: '瓶', category: '玻璃瓶' }
-        ];
+        // 单元格里包装标签（瓶/听/…）→ packaging.json 的「分类」
+        const PACKAGING_LABEL_TO_CATEGORY = {
+            '瓶': '玻璃瓶',
+            '听': '易拉罐',
+            '马口铁桶': '马口铁桶',
+            '不锈钢桶': '不锈钢桶',
+            'PET桶': 'PET桶'
+        };
 
-        function packagingCategoriesFor(text) {
-            const t = text || '';
-            return PACKAGING_KEYWORD_MAP.filter(m => t.indexOf(m.keyword) !== -1).map(m => m.category);
+        // 把「瓶：258ml、330ml… 听：330ml、330ml纤体罐…」解析成 [{category, tokens}]
+        function parsePackagingCell(text) {
+            const t = (text || '').trim();
+            if (!t) return [];
+            const parts = t.split(/\s+/).filter(Boolean);
+            const result = [];
+            for (const part of parts) {
+                const idx = part.indexOf('：');
+                if (idx === -1) continue;
+                const cat = PACKAGING_LABEL_TO_CATEGORY[part.slice(0, idx)];
+                if (!cat) continue;
+                const tokens = part.slice(idx + 1).split(/[、,，]/).map(s => s.trim()).filter(Boolean);
+                if (tokens.length) result.push({ category: cat, tokens });
+            }
+            return result;
         }
 
-        function buildPackagingTooltip(cats) {
-            const matches = packagingData.filter(p => cats.indexOf(p['分类']) !== -1);
+        // 统一规格写法，便于精确比对：「258ml」→「258」，「330ml纤体罐」→「330纤体」，「1L」→「1000」，「20L」→「20000」
+        function normSpec(spec) {
+            let s = String(spec).trim();
+            s = s.replace(/ml/gi, '');
+            s = s.replace(/罐/g, '');
+            const lm = s.match(/^(\d+(?:\.\d+)?)[lL]$/);
+            if (lm) return String(Math.round(parseFloat(lm[1]) * 1000));
+            return s;
+        }
+
+        // 精确匹配：只返回该单元格里明确提到的包装
+        function packagingEntriesFor(text) {
+            const mentioned = parsePackagingCell(text);
+            if (!mentioned.length) return [];
+            return packagingData.filter(p => {
+                return mentioned.some(m => {
+                    if (m.category !== p['分类']) return false;
+                    const key = normSpec(p['规格_ml']);
+                    return m.tokens.some(tok => normSpec(tok) === key);
+                });
+            });
+        }
+
+        function buildPackagingTooltip(matches) {
             if (!matches.length) return '';
-            const headers = ['分类', '规格', '材质', '包装规格', '高度(mm)', '直径(mm)', '备注'];
+            const headers = ['图片', '分类', '规格', '材质', '包装规格', '高度(mm)', '直径(mm)', '备注'];
             const thead = '<tr>' + headers.map(h =>
                 '<th class="px-2.5 py-1.5 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-wider bg-surface-container/60 border-b border-outline-variant/50 whitespace-nowrap">' + h + '</th>'
             ).join('') + '</tr>';
             const tbody = matches.map(p => {
                 const dim = p['参数_mm'] || {};
                 const note = (dim['备注'] === undefined || dim['备注'] === null || dim['备注'] === '') ? '—' : dim['备注'];
+                const img = p['图片'] || '';
                 return '<tr class="border-b border-outline-variant/40 last:border-0">' +
+                    '<td class="px-2.5 py-1.5 whitespace-nowrap">' + (img ? '<img src="' + img + '" alt="' + (p['分类'] || '') + '" class="h-12 w-auto object-contain">' : '<span class="text-on-surface-variant">—</span>') + '</td>' +
                     '<td class="px-2.5 py-1.5 whitespace-nowrap font-bold text-on-surface">' + (p['分类'] || '—') + '</td>' +
                     '<td class="px-2.5 py-1.5 whitespace-nowrap text-on-surface">' + formatVolume(p['规格_ml']) + '</td>' +
                     '<td class="px-2.5 py-1.5 whitespace-nowrap text-on-surface">' + (p['材质'] || '—') + '</td>' +
@@ -837,8 +875,8 @@
         }
 
         function showPackagingTooltip(cell) {
-            const cats = packagingCategoriesFor(cell.textContent || '');
-            const html = cats.length ? buildPackagingTooltip(cats) : '';
+            const matches = packagingEntriesFor(cell.textContent || '');
+            const html = matches.length ? buildPackagingTooltip(matches) : '';
             if (!html) { hidePackagingTooltip(); return; }
             packagingTooltipBody.innerHTML = html;
             packagingTooltip.classList.remove('hidden');
