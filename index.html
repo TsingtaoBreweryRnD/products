@@ -610,17 +610,17 @@
             return t ? t.split(/\s+/).filter(Boolean).join('\n') : t;
         }
 
-        // 保质期拆行：「熟啤酒：瓶装X天、听装X天、… 生啤酒：瓶装X天、…」→ 每种包装单独一行
+        // 保质期拆行：「熟啤酒：瓶装X天、听装X天、… 生啤酒：瓶装X天、…」→ 每种包装单独一行，啤酒类型加粗
         function shelfToLines(s) {
             const v = (s || '—').replace(/\s+/g, ' ').trim();
             if (!v || v === '—') return v;
             return v.split(' ').filter(Boolean).map(seg => {
                 const idx = seg.indexOf('：');
                 if (idx === -1) return seg;
-                const prefix = seg.slice(0, idx + 1);
+                const label = seg.slice(0, idx);
                 const items = seg.slice(idx + 1).split(/[、,，]/).map(x => x.trim()).filter(Boolean);
                 if (!items.length) return seg;
-                return items.map((it, i) => (i === 0 ? prefix + it : it)).join('\n');
+                return items.map((it, i) => (i === 0 ? '<b>' + label + '</b>：' + it : it)).join('\n');
             }).join('\n');
         }
 
