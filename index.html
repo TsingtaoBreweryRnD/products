@@ -98,17 +98,21 @@
             </button>
         </div>
 
-        <!-- 总览入口 -->
-        <div class="px-4 mb-2 flex-shrink-0 flex flex-col gap-1">
-            <button id="overview-btn" type="button" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-colors text-on-surface-variant hover:bg-surface-container-low">
-                <span class="material-symbols-outlined text-base">table_chart</span>
-                <span class="text-sm font-bold flex-1 truncate">酒液</span>
-                <span id="overview-count" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant"></span>
+        <!-- 酒液三级分类（主导航） -->
+        <div class="px-4 flex-1 overflow-y-auto no-scrollbar min-h-0">
+            <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-outline">酒液分类</p>
+            <div id="product-rail" class="flex flex-col gap-0.5"></div>
+        </div>
+
+        <!-- 次要入口：总览表 -->
+        <div class="px-4 py-3 mt-2 border-t border-outline-variant flex-shrink-0 flex flex-col gap-0.5">
+            <button id="overview-btn" type="button" class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-left transition-colors text-[13px] text-on-surface-variant hover:bg-surface-container-low">
+                <span class="material-symbols-outlined text-sm">table_chart</span>
+                <span class="font-semibold flex-1 truncate">酒液总览</span>
             </button>
-            <button id="packaging-overview-btn" type="button" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-colors text-on-surface-variant hover:bg-surface-container-low">
-                <span class="material-symbols-outlined text-base">inventory_2</span>
-                <span class="text-sm font-bold flex-1 truncate">包装</span>
-                <span id="packaging-overview-count" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant"></span>
+            <button id="packaging-overview-btn" type="button" class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-left transition-colors text-[13px] text-on-surface-variant hover:bg-surface-container-low">
+                <span class="material-symbols-outlined text-sm">inventory_2</span>
+                <span class="font-semibold flex-1 truncate">包装总览</span>
             </button>
         </div>
 
@@ -146,8 +150,15 @@
 
                 <!-- ========== 主产品视图 ========== -->
                 <div id="main-content-view" class="w-full flex flex-col h-full gap-6">
+                    <!-- 欢迎默认视图 -->
+                    <div id="welcome-view" class="flex flex-col items-center justify-center text-center py-16 md:py-24 gap-4">
+                        <span class="material-symbols-outlined text-6xl text-outline-variant">local_drink</span>
+                        <h2 class="text-xl md:text-2xl font-bold text-on-surface-variant">委托生产产品库</h2>
+                        <p class="text-sm text-on-surface-variant max-w-sm leading-relaxed">从左侧「酒液分类」中选择品类与产品查看详情，或在左下角查看酒液、包装总览表。</p>
+                    </div>
+
                     <!-- 产品信息视图 -->
-                    <div id="product-view" class="flex flex-col gap-6 max-w-5xl mx-auto w-full">
+                    <div id="product-view" class="flex flex-col gap-6 max-w-5xl mx-auto w-full hidden">
                     
                     <!-- Breadcrumbs & Title -->
                     <div>
@@ -282,6 +293,9 @@
         let packagingData = [];
         let overviewCategory = null;
         let overviewVariety = null;
+        let activeProductId = null;
+        const expandedCats = new Set();
+        const expandedVars = new Set();
 
         // --- 将 products_all.json 的嵌套结构展开为扁平产品列表 ---
         function flattenProducts(raw) {
@@ -316,6 +330,12 @@
         function selectProduct(id) {
             const prod = productsData.find(p => p.id === id);
             if(!prod) return;
+
+            activeProductId = id;
+            expandedCats.add(prod.category);
+            expandedVars.add(prod.category + '|' + prod.variety);
+            renderRail();
+            closeSidebar();
 
             // 切回产品详情视图（若当前在总览视图）
             showProductView();
@@ -394,6 +414,7 @@
         const overviewCount = document.getElementById('overview-count');
         const packagingOverviewView = document.getElementById('packaging-overview-view');
         const packagingOverviewBtn = document.getElementById('packaging-overview-btn');
+        const welcomeView = document.getElementById('welcome-view');
 
         function setNavActive(activeBtn) {
             [overviewBtn, packagingOverviewBtn].forEach(b => {
@@ -408,7 +429,7 @@
         }
 
         function showOnly(view) {
-            [productView, overviewView, packagingOverviewView].forEach(v => {
+            [productView, overviewView, packagingOverviewView, welcomeView].forEach(v => {
                 if (v === view) v.classList.remove('hidden');
                 else v.classList.add('hidden');
             });
@@ -417,11 +438,13 @@
         function showOverview() {
             showOnly(overviewView);
             setNavActive(overviewBtn);
+            closeSidebar();
         }
 
         function showPackagingOverview() {
             showOnly(packagingOverviewView);
             setNavActive(packagingOverviewBtn);
+            closeSidebar();
         }
 
         function showProductView() {
@@ -429,9 +452,74 @@
             setNavActive(null);
         }
 
+        function showWelcome() {
+            showOnly(welcomeView);
+            setNavActive(null);
+        }
+
         overviewBtn.addEventListener('click', showOverview);
         packagingOverviewBtn.addEventListener('click', showPackagingOverview);
         document.getElementById('back-to-overview').addEventListener('click', showOverview);
+
+        // --- 酒液三级分类树（品类 → 品种 → 产品） ---
+        function renderRail() {
+            const rail = document.getElementById('product-rail');
+            if (!rail) return;
+            const cats = [...new Set(productsData.map(p => p.category))];
+            let html = '';
+            cats.forEach(cat => {
+                const products = productsData.filter(p => p.category === cat);
+                const varieties = [...new Set(products.map(p => p.variety))];
+                const catOpen = expandedCats.has(cat);
+                html += '<div class="mb-0.5">';
+                html += '<button type="button" data-toggle="cat" data-cat="' + cat + '" class="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-sm font-bold text-on-surface hover:bg-surface-container-low transition-colors">';
+                html += '<span class="material-symbols-outlined text-base text-outline transition-transform" style="transform:' + (catOpen ? 'rotate(90deg)' : 'rotate(0deg)') + '">chevron_right</span>';
+                html += '<span class="flex-1 text-left truncate">' + cat + '</span>';
+                html += '<span class="text-[10px] font-semibold text-on-surface-variant">' + products.length + '</span>';
+                html += '</button>';
+                html += '<div class="' + (catOpen ? '' : 'hidden') + ' ml-3 pl-2 border-l border-outline-variant/40 flex flex-col gap-0.5">';
+                varieties.forEach(v => {
+                    const vProducts = products.filter(p => p.variety === v);
+                    const vKey = cat + '|' + v;
+                    const vOpen = expandedVars.has(vKey);
+                    html += '<button type="button" data-toggle="var" data-var="' + vKey + '" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[13px] font-semibold text-on-surface-variant hover:bg-surface-container-low transition-colors">';
+                    html += '<span class="material-symbols-outlined text-sm text-outline transition-transform" style="transform:' + (vOpen ? 'rotate(90deg)' : 'rotate(0deg)') + '">chevron_right</span>';
+                    html += '<span class="flex-1 text-left truncate">' + v + '</span>';
+                    html += '</button>';
+                    html += '<div class="' + (vOpen ? '' : 'hidden') + ' ml-2 pl-2 border-l border-outline-variant/40 flex flex-col gap-0.5">';
+                    vProducts.forEach(p => {
+                        const active = p.id === activeProductId;
+                        html += '<button type="button" data-product-id="' + p.id + '" class="w-full text-left px-2 py-1.5 rounded-lg text-[13px] leading-snug transition-colors ' + (active ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface hover:bg-surface-container-low') + '">' + p.name + '</button>';
+                    });
+                    html += '</div>';
+                });
+                html += '</div>';
+                html += '</div>';
+            });
+            rail.innerHTML = html;
+        }
+
+        document.getElementById('product-rail').addEventListener('click', (e) => {
+            const prodBtn = e.target.closest('[data-product-id]');
+            if (prodBtn) {
+                selectProduct(prodBtn.getAttribute('data-product-id'));
+                return;
+            }
+            const catBtn = e.target.closest('[data-toggle="cat"]');
+            if (catBtn) {
+                const cat = catBtn.getAttribute('data-cat');
+                if (expandedCats.has(cat)) expandedCats.delete(cat); else expandedCats.add(cat);
+                renderRail();
+                return;
+            }
+            const varBtn = e.target.closest('[data-toggle="var"]');
+            if (varBtn) {
+                const vKey = varBtn.getAttribute('data-var');
+                if (expandedVars.has(vKey)) expandedVars.delete(vKey); else expandedVars.add(vKey);
+                renderRail();
+                return;
+            }
+        });
 
         // 把用空格分隔的多段文字拆成多行（包装形式、风味特点等）
         function breakBySpace(s) {
@@ -595,6 +683,15 @@
                 overlay.classList.remove('hidden');
                 document.body.style.overflow = 'hidden'; // Prevent background scrolling
             } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // 移动端在选中产品/切换视图后自动收起侧栏（桌面端为 no-op）
+        function closeSidebar() {
+            if (!sidebar.classList.contains('-translate-x-full')) {
                 sidebar.classList.add('-translate-x-full');
                 overlay.classList.add('hidden');
                 document.body.style.overflow = '';
@@ -882,9 +979,10 @@
         window.addEventListener('load', async () => {
             await loadProducts();
             loadPackaging();
+            renderRail();
             renderFilterChips();
             renderOverviewTable();
-            showOverview();
+            showWelcome();
         });
     </script>
 </body>
