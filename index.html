@@ -252,6 +252,10 @@
                     <!-- 总览视图（酒液） -->
                     <div id="overview-view" class="flex flex-col gap-6 hidden">
                         <div>
+                            <button id="overview-back-catalog" type="button" class="mb-4 inline-flex items-center gap-1.5 text-sm font-bold text-primary bg-white border border-outline-variant rounded-full px-4 py-2 shadow-sm hover:bg-primary/5 hover:border-primary/50 active:scale-[0.98] transition-all">
+                                <span class="material-symbols-outlined text-lg">arrow_back</span>
+                                <span>返回目录</span>
+                            </button>
                             <h2 class="text-2xl md:text-3xl font-bold text-on-surface">酒液</h2>
                             <p class="text-sm text-on-surface-variant mt-1" id="overview-subtitle">横向对比全部产品的品类、品种与指标。</p>
                         </div>
@@ -265,6 +269,10 @@
                     <!-- 总览视图（包装） -->
                     <div id="packaging-overview-view" class="flex flex-col gap-6 hidden">
                         <div>
+                            <button id="packaging-back-catalog" type="button" class="mb-4 inline-flex items-center gap-1.5 text-sm font-bold text-primary bg-white border border-outline-variant rounded-full px-4 py-2 shadow-sm hover:bg-primary/5 hover:border-primary/50 active:scale-[0.98] transition-all">
+                                <span class="material-symbols-outlined text-lg">arrow_back</span>
+                                <span>返回目录</span>
+                            </button>
                             <h2 class="text-2xl md:text-3xl font-bold text-on-surface">包装</h2>
                             <p class="text-sm text-on-surface-variant mt-1" id="packaging-overview-subtitle">横向对比全部包装形式的材质、容量、规格与尺寸。</p>
                         </div>
@@ -462,6 +470,8 @@
         overviewBtn.addEventListener('click', showOverview);
         packagingOverviewBtn.addEventListener('click', showPackagingOverview);
         document.getElementById('back-to-catalog').addEventListener('click', showCatalog);
+        document.getElementById('overview-back-catalog').addEventListener('click', showCatalog);
+        document.getElementById('packaging-back-catalog').addEventListener('click', showCatalog);
         document.getElementById('breadcrumb-catalog').addEventListener('click', (e) => {
             e.preventDefault();
             showCatalog();
