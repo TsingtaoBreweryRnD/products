@@ -208,7 +208,7 @@
                         </div>
                         <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
                             <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">风味特点</label>
-                            <p class="text-sm font-medium text-on-surface mt-1 leading-relaxed" id="product-flavor"></p>
+                            <p class="text-sm font-medium text-on-surface mt-1 leading-relaxed whitespace-pre-line" id="product-flavor"></p>
                         </div>
                         <div class="bg-white border border-outline-variant/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
                             <label class="text-[11px] text-outline uppercase tracking-wider font-semibold">包装形式</label>
@@ -350,8 +350,8 @@
             document.getElementById('liquid-variety').textContent = prod.variety;
             document.getElementById('product-claim').textContent = prod.claim;
             document.getElementById('product-process').textContent = prod.process;
-            document.getElementById('product-flavor').textContent = prod.flavor;
-            document.getElementById('product-packaging').textContent = prod.packaging;
+            document.getElementById('product-flavor').textContent = breakBySpace(prod.flavor);
+            document.getElementById('product-packaging').textContent = breakBySpace(prod.packaging);
 
             // 生产工厂 / SC证（有值才显示）
             const fsRow = document.getElementById('factory-sc-row');
