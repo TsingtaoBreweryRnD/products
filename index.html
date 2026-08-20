@@ -150,11 +150,13 @@
 
                 <!-- ========== 主产品视图 ========== -->
                 <div id="main-content-view" class="w-full flex flex-col h-full gap-6">
-                    <!-- 欢迎默认视图 -->
-                    <div id="welcome-view" class="flex flex-col items-center justify-center text-center py-16 md:py-24 gap-4">
-                        <span class="material-symbols-outlined text-6xl text-outline-variant">local_drink</span>
-                        <h2 class="text-xl md:text-2xl font-bold text-on-surface-variant">委托生产产品库</h2>
-                        <p class="text-sm text-on-surface-variant max-w-sm leading-relaxed">从左侧「酒液分类」中选择品类与产品查看详情，或在左下角查看酒液、包装总览表。</p>
+                    <!-- 首页：产品目录（默认视图） -->
+                    <div id="catalog-view" class="flex flex-col gap-6 max-w-6xl mx-auto w-full">
+                        <div class="flex flex-col gap-1">
+                            <h2 class="text-2xl md:text-3xl font-bold text-on-surface">产品目录</h2>
+                            <p class="text-sm text-on-surface-variant" id="catalog-subtitle"></p>
+                        </div>
+                        <div id="catalog-container" class="flex flex-col gap-8"></div>
                     </div>
 
                     <!-- 产品信息视图 -->
@@ -167,7 +169,7 @@
                             <span>返回</span>
                         </button>
                         <nav class="flex items-center text-xs text-outline-variant mb-2 font-medium flex-wrap gap-y-1">
-                            <a href="#" class="hover:text-primary transition-colors">产品列表</a>
+                            <a href="#" id="breadcrumb-catalog" class="hover:text-primary transition-colors">产品列表</a>
                             <span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
                             <span class="text-on-surface-variant" id="breadcrumb-category"></span>
                             <span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
@@ -414,7 +416,7 @@
         const overviewCount = document.getElementById('overview-count');
         const packagingOverviewView = document.getElementById('packaging-overview-view');
         const packagingOverviewBtn = document.getElementById('packaging-overview-btn');
-        const welcomeView = document.getElementById('welcome-view');
+        const catalogView = document.getElementById('catalog-view');
 
         function setNavActive(activeBtn) {
             [overviewBtn, packagingOverviewBtn].forEach(b => {
@@ -429,7 +431,7 @@
         }
 
         function showOnly(view) {
-            [productView, overviewView, packagingOverviewView, welcomeView].forEach(v => {
+            [productView, overviewView, packagingOverviewView, catalogView].forEach(v => {
                 if (v === view) v.classList.remove('hidden');
                 else v.classList.add('hidden');
             });
@@ -452,14 +454,84 @@
             setNavActive(null);
         }
 
-        function showWelcome() {
-            showOnly(welcomeView);
+        function showCatalog() {
+            showOnly(catalogView);
             setNavActive(null);
         }
 
         overviewBtn.addEventListener('click', showOverview);
         packagingOverviewBtn.addEventListener('click', showPackagingOverview);
         document.getElementById('back-to-overview').addEventListener('click', showOverview);
+        document.getElementById('breadcrumb-catalog').addEventListener('click', (e) => {
+            e.preventDefault();
+            showCatalog();
+        });
+
+        // --- 首页产品目录：原麦汁浓度 / 酒精度 取范围 ---
+        function catalogRange(skus, key, unit) {
+            const seen = new Set();
+            const vals = [];
+            (skus || []).forEach(s => {
+                const raw = String(s[key] || '').replace(/\s+/g, ' ').trim();
+                if (!raw || raw === '—') return;
+                if (!seen.has(raw)) { seen.add(raw); vals.push(raw); }
+            });
+            if (!vals.length) return '—';
+            if (vals.length === 1) return vals[0];
+            const nums = vals.map(v => {
+                const m = String(v).replace(/\s+/g, '').match(/-?\d+(?:\.\d+)?/);
+                return m ? parseFloat(m[0]) : null;
+            }).filter(n => n !== null);
+            if (nums.length <= 1) return vals[0];
+            const min = Math.min(...nums);
+            const max = Math.max(...nums);
+            const fmt = n => (Math.round(n * 10) / 10).toFixed(1);
+            if (min === max) return fmt(min) + unit;
+            return fmt(min) + '–' + fmt(max) + unit;
+        }
+
+        function renderCatalog() {
+            const container = document.getElementById('catalog-container');
+            const subtitle = document.getElementById('catalog-subtitle');
+            if (!container) return;
+            const totalSkus = productsData.reduce((n, p) => n + ((p.skus && p.skus.length) ? p.skus.length : 0), 0);
+            if (subtitle) subtitle.textContent = '共 ' + productsData.length + ' 个产品 · ' + totalSkus + ' 个规格，展示各产品的原麦汁浓度与酒精度范围。';
+            if (!productsData.length) {
+                container.innerHTML = '<p class="text-sm text-on-surface-variant">暂无产品数据</p>';
+                return;
+            }
+            const cats = [...new Set(productsData.map(p => p.category))];
+            container.innerHTML = cats.map(cat => {
+                const products = productsData.filter(p => p.category === cat);
+                const color = beerCategoryColor(cat);
+                const cards = products.map(p => {
+                    const wort = catalogRange(p.skus, '原麦汁浓度', '°P');
+                    const abv = catalogRange(p.skus, '酒精度', '%vol');
+                    return '<button type="button" data-catalog-id="' + p.id + '" class="group flex items-start gap-3 p-4 rounded-xl bg-white border border-outline-variant/60 shadow-sm hover:shadow-md hover:border-primary/40 transition-all text-left w-full">' +
+                        '<span class="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1" style="background-color:' + color + '"></span>' +
+                        '<span class="flex-1 min-w-0">' +
+                            '<span class="block font-bold text-on-surface leading-snug group-hover:text-primary transition-colors">' + p.name + '</span>' +
+                            '<span class="block text-xs text-on-surface-variant mt-0.5">' + p.variety + '</span>' +
+                            '<span class="block mt-2 text-xs text-on-surface-variant">' +
+                                '原麦汁浓度 <span class="text-on-surface font-semibold">' + wort + '</span>' +
+                                '<span class="mx-1.5 text-outline-variant">·</span>' +
+                                '酒精度 <span class="text-on-surface font-semibold">' + abv + '</span>' +
+                            '</span>' +
+                        '</span>' +
+                        '<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors flex-shrink-0">chevron_right</span>' +
+                    '</button>';
+                }).join('');
+                return '<section class="flex flex-col gap-3">' +
+                    '<h3 class="text-sm font-extrabold text-on-surface flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color:' + color + '"></span>' + cat + '<span class="text-xs font-semibold text-on-surface-variant">' + products.length + ' 款</span></h3>' +
+                    '<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">' + cards + '</div>' +
+                '</section>';
+            }).join('');
+        }
+
+        document.getElementById('catalog-container').addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-catalog-id]');
+            if (btn) selectProduct(btn.getAttribute('data-catalog-id'));
+        });
 
         // --- 酒液三级分类树（品类 → 品种 → 产品） ---
         function renderRail() {
@@ -982,7 +1054,8 @@
             renderRail();
             renderFilterChips();
             renderOverviewTable();
-            showWelcome();
+            renderCatalog();
+            showCatalog();
         });
     </script>
 </body>
